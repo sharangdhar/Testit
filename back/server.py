@@ -227,10 +227,8 @@ class handler (BaseHTTPRequestHandler):
         tid = data['problem_id']
         # Need to add files to display page
         
-
         all_tests = data['tests']
         user_setup = data['setup']
-
 
         for i in length(all_tests):
             file = open("data/env/env_" + str(tid) + "/testit.py", "a")
@@ -245,8 +243,11 @@ class handler (BaseHTTPRequestHandler):
                 arr[i] = "Failed"
             os.chdir("../../..")
 
-        self.wfile.write(arr)
-        self.wfile.write("")
+        self.wfile.write("OK")
+
+        file = open("data/results/result_" + str(tid), "a")
+        file.write("\n\n\n")
+        file.write(arr)
 
 
     def log_message(self, format, *args):
