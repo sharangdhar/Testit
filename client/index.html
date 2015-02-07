@@ -161,6 +161,10 @@
         for (var i=0; i< $scope.contrib_challenges; i++){
           form_data.tests.push($scope.contrib_challenges[i]);
         }
+        console.log("\n");
+
+        form_data.problem_id = $scope.problem_id;
+        console.log("problem id: " + form_data.problem_id);
 
         console.log('sending post');
         $http.post('', form_data).
@@ -227,7 +231,7 @@
                 $scope.sorry_m = true;
               } else {
                 $scope.problem_id = data.problem_id;
-                console.log("data.ps :" + data.ps);
+                console.log("problem_id: " + $scope.problem_id);
                 $scope.check_field = data.ps;
 
                 challenges = [];
