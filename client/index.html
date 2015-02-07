@@ -217,10 +217,17 @@
   <!-- Login Page ends -->
 
 <!-- Modal Dialogs-->
-<modal-dialog ng-model="submission_succes" show='false' dialog-title='Submission Successful!'>
+<modal-dialog ng-model="$parent.submission_dialog" show='false' dialog-title='Your Submission Compiled!'>
   <button class="btn btn-success" ng-click=""> Continue </button>
 </modal-dialog>
 
+<modal-dialog ng-model="$parent.contributor_test_dialog" show='false' dialog-title='Your Passed the Challenges!'>
+  <button class="btn btn-success" ng-click=""> Continue </button>
+</modal-dialog>
+
+<modal-dialog ng-model="$parent.contributor_test_dialog" show='false' dialog-title='Your Tests Compiled!'>
+  <button class="btn btn-success" ng-click=""> Continue </button>
+</modal-dialog>
 
 <!-- Developers starting -->
 
