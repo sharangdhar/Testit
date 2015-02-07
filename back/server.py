@@ -58,10 +58,12 @@ class handler (BaseHTTPRequestHandler):
         self.wfile.write("Thanks %s !" % form["your_name"].value)
         '''
 
-        self.deal_post_data()
+        print self.rfile.readline()
+        self.wfile.write("Upload successful!")
+        # self.deal_post_data()
         return
 
-    # From https://gist.github.com/UniIsland/3346170
+    # Modified from https://gist.github.com/UniIsland/3346170
     def deal_post_data(self):
         boundary = self.headers.plisttext.split("=")[1]
         remainbytes = int(self.headers['content-length'])
