@@ -58,7 +58,7 @@ class handler (BaseHTTPRequestHandler):
             if data['mode'] == 'submission':
                 global tid
                 try: 
-                    check = open("data/checks/check_" + str(tid) + ".json")
+                    check = open("data/checks/check_" + str(tid) + ".json", "w")
                     check.write(data_string)
                 except:
                     return
@@ -122,6 +122,7 @@ class handler (BaseHTTPRequestHandler):
                 os.mkdir("data/env/env_" + str(tid))
             else:
                 os.system("rm -rf data/env/env_" + str(tid))
+                os.mkdir("data/env/env_" + str(tid))
             env.extractall("data/env/env_" + str(tid) + "/")
             os.remove("data/env/env_" + str(tid) + ".zip")
         except:
@@ -144,13 +145,14 @@ class handler (BaseHTTPRequestHandler):
 
         file.close()
 
-        try:            
+        try:
             os.chdir("data/env/env_" + str(tid))
             x = subprocess.check_call(["python", "testit.py"])
             os.chdir("../../..")
             self.wfile.write("All tests passed!")
         except:      
             self.wfile.write("Error detected! One or more test cases failed!")
+            os.system("rm -rf data/env/env_" + str(tid))
 
         tid = tid + 1
 
