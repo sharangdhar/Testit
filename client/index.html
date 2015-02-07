@@ -48,8 +48,44 @@
         for (var i = 0; i< $scope.uploader.queue.length; i++){
           $scope.uploader.queue[i].upload();
         }
+
+        var form_data = {};
+        form_data.mode = "submission";
+
+        form_data.tests = [];
+        form_data.tests.push({a10: $scope.assert_10, a11: $scope.assert_11, a12: $scope.assert_12});
+        form_data.tests.push({a20: $scope.assert_20, a21: $scope.assert_21, a22: $scope.assert_22});
+        form_data.tests.push({a30: $scope.assert_30, a31: $scope.assert_31, a32: $scope.assert_32});
+
+        form_data.ps = ($scope.prbsub==null)? "" : $scope.prbsub.trim();
+
         console.log('sending post');
-        $http.post('', {msg:'hello word!'}).
+        $http.post('', form_data).
+            success(function(data, status, headers, config) {
+              // this callback will be called asynchronously
+              // when the response is available
+            }).
+            error(function(data, status, headers, config) {
+              // called asynchronously if an error occurs
+              // or server returns response with an error status.
+            });
+        return null;
+      };
+
+      $scope.checkContributor = function(){
+
+        var form_data = {};
+        form_data.mode = "contributor";
+
+        form_data.tests = [];
+        form_data.tests.push({a10: $scope.assert_10, a11: $scope.assert_11, a12: $scope.assert_12});
+        form_data.tests.push({a20: $scope.assert_20, a21: $scope.assert_21, a22: $scope.assert_22});
+        form_data.tests.push({a30: $scope.assert_30, a31: $scope.assert_31, a32: $scope.assert_32});
+
+        form_data.ps = ($scope.prbsub==null)? "" : $scope.prbsub.trim();
+
+        console.log('sending post');
+        $http.post('', form_data).
             success(function(data, status, headers, config) {
               // this callback will be called asynchronously
               // when the response is available
@@ -92,7 +128,7 @@
            
             <li ><a ng-click="setPage('profile')">Profile</a></li>
             <li><a ng-click="setPage('submission')">Submission Page</a></li>
-            <li><a ng-click="setPage('contributor')">Contributor Page</a></li>
+            <li><a ng-click="setPage('contribution')">Contributor Page</a></li>
             <li><a ng-click="setPage('developers')">Developers</a></li>
           
           </ul>
@@ -102,6 +138,7 @@
   <br />
 <br />
 <br />
+
 <!-- Developers starting -->
 
 <div class="container" ng-if="current_page=='developers'">
@@ -164,20 +201,20 @@
       <div class="row">
         <form role="form">
               <div class="form-group text-center">
-                  <textarea ng-model="prbsub" rows="13" cols="100" style="resize:none;">
+                  <textarea ng-model="$parent.prbsub" rows="13" cols="100" style="resize:none;">
                     Type problem here ....
                   </textarea>
                   <br>
                   <!-- test1 starting -->
                   <div class="row">
-                    <label for="assert_10">Test 1:</label>
-                    <textarea ng-model="assert_10" rows="1" cols="38" style="resize:none;">
+                    <label>Test 1:</label>
+                    <textarea ng-model="$parent.assert_10" rows="1" cols="38" style="resize:none;">
                       test 1 here ..
                     </textarea>  
-                    <textarea ng-model="assert_11" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="$parent.assert_11" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea ng-model="assert_12" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.assert_12" rows="1" cols="38" style="resize:none;">
                       solution 1 here ..
                     </textarea>
                   </div>
@@ -186,13 +223,13 @@
                   <!-- test 2 starting -->
                   <div class="row">
                     <label for="assert_20">Test 2:</label>
-                    <textarea ng-model="assert_20" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.assert_20" rows="1" cols="38" style="resize:none;">
                       test 2 here ..
                     </textarea>  
-                    <textarea ng-model="assert_21" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="$parent.assert_21" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea ng-model="assert_22" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.assert_22" rows="1" cols="38" style="resize:none;">
                       solution 2 here ..
                     </textarea>
                   </div>
@@ -201,13 +238,13 @@
                   <!-- test 3 starting -->
                   <div class="row">
                     <label for="assert_30">Test 3:</label>
-                    <textarea ng-model="assert_30" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.assert_30" rows="1" cols="38" style="resize:none;">
                       test 3 here ..
                     </textarea>  
-                    <textarea ng-model="assert_31" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="$parent.assert_31" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea ng-model="assert_32" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.assert_32" rows="1" cols="38" style="resize:none;">
                       solution 3 here ..
                     </textarea>
                   </div>
