@@ -4,7 +4,7 @@ import BaseHTTPServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 from os import curdir, sep
-import cgi, sys, re, os
+import cgi, sys, re, os, json
 
 PORT = '9001'
 
@@ -57,10 +57,12 @@ class handler (BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write("Thanks %s !" % form["your_name"].value)
         '''
+        data_string = self.rfile.read(int(self.headers['Content-Length']))
+        self.send_response(200)
+        self.end_headers()
 
-        print self.rfile.readline()
-        self.wfile.write("Upload successful!")
-        # self.deal_post_data()
+        data = json.loads(data_string)
+        print data
         return
 
     # Modified from https://gist.github.com/UniIsland/3346170
