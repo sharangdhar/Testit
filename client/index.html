@@ -29,8 +29,8 @@
       };
 
       $scope.validSubmissions = function(){
-        /*test_cases = [$scope.assert_10, $scope.assert_11, $scope.assert_12, $scope.assert_20, $scope.assert_21, $scope.assert_22,
-                      $scope.assert_30, $scope.assert_31, $scope.assert_32]; */
+        test_cases = [$scope.assert_10, $scope.assert_11, $scope.assert_12, $scope.assert_20, $scope.assert_21, $scope.assert_22,
+                      $scope.assert_30, $scope.assert_31, $scope.assert_32];
         for (var i=0; i< test.cases.length; i++){
           test_cases[i] = test_cases[i].trim();
           if (test_cases[i]==""){
@@ -38,13 +38,14 @@
           }
         }
 
-        /*test_text= $scope.prbsub.trim();*/
+        test_text= $scope.prbsub.trim();
         return (test_text=="") ? false : true;
       };
 
       $scope.uploadFiles = function(){
-        for (var item in $scope.uploader.queue){
-          item.upload();
+        
+        for (var i =0; i< $scope.uploader.queue.length; i++){
+          $scope.uploader.queue[i].upload();
         }
         return null;
       };
@@ -53,8 +54,8 @@
     demoApp.controller('MainController',MainController);
   </script>
   <style>
-            .my-drop-zone { border: dotted 3px lightgray; position:center;}
-            .nv-file-over { border: dotted 3px red; position:center;} /* Default class applied to drop zones on over */
+            .my-drop-zone { border: dotted 3px lightgray; text-align:center;}
+            .nv-file-over { border: dotted 3px red; text-align:center;} /* Default class applied to drop zones on over */
             .another-file-over-class { border: dotted 3px green; }
             html, body { height: 100%; }
   </style>
@@ -96,12 +97,6 @@
 
 <br />
 <br />
-<ul>
-    <li ng-repeat="item in uploader.queue">
-        Name: <span ng-bind="item.file.name"></span><br/>
-        <button ng-click="item.upload()">upload</button>
-    </li>
-</ul>
 <!-- Developers starting -->
 
 <div class="container" ng-if="current_page=='developers'">
@@ -164,20 +159,20 @@
       <div class="row">
         <form role="form">
               <div class="form-group text-center">
-                  <textarea id="prbsub" rows="13" cols="100" style="resize:none;">
+                  <textarea ng-model="prbsub" rows="13" cols="100" style="resize:none;">
                     Type problem here ....
                   </textarea>
                   <br>
                   <!-- test1 starting -->
                   <div class="row">
                     <label for="assert_10">Test 1:</label>
-                    <textarea id="assert_10" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="assert_10" rows="1" cols="38" style="resize:none;">
                       test 1 here ..
                     </textarea>  
-                    <textarea id="assert_11" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="assert_11" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea id="assert_13" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="assert_13" rows="1" cols="38" style="resize:none;">
                       solution 1 here ..
                     </textarea>
                   </div>
@@ -186,13 +181,13 @@
                   <!-- test 2 starting -->
                   <div class="row">
                     <label for="assert_20">Test 2:</label>
-                    <textarea id="assert_20" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="assert_20" rows="1" cols="38" style="resize:none;">
                       test 2 here ..
                     </textarea>  
-                    <textarea id="assert_21" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="assert_21" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea id="assert_23" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="assert_23" rows="1" cols="38" style="resize:none;">
                       solution 2 here ..
                     </textarea>
                   </div>
@@ -201,22 +196,24 @@
                   <!-- test 3 starting -->
                   <div class="row">
                     <label for="assert_30">Test 3:</label>
-                    <textarea id="assert_30" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="assert_30" rows="1" cols="38" style="resize:none;">
                       test 3 here ..
                     </textarea>  
-                    <textarea id="assert_31" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="assert_31" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea id="assert_33" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="assert_33" rows="1" cols="38" style="resize:none;">
                       solution 3 here ..
                     </textarea>
                   </div>
                   <!-- test 3 ending -->
                   <!-- upload file -->
-                  <div class="row">
+                  <br />
+                  <br />
+                  <div class="row text-center">
                     <div class="col-md-4">
                       <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
-                          Base drop zone
+                          Drop Zip File
                       </div>
                     </div>
                   </div>
