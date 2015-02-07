@@ -31,7 +31,7 @@
         $scope.current_page = page;
       };
 
-      $scope.validSubmissions = function(){
+      $scope.validSubmission = function(){
         test_cases = [$scope.assert_10, $scope.assert_11, $scope.assert_12, $scope.assert_20, $scope.assert_21, $scope.assert_22,
                       $scope.assert_30, $scope.assert_31, $scope.assert_32];
         for (var i=0; i< test.cases.length; i++){
@@ -40,9 +40,28 @@
             return false;
           }
         }
+        
+        return $scope.prbsub.trim()!="";
+      };
 
-        test_text = $scope.prbsub.trim();
-        return (test_text=="") ? false : true;
+      $scope.validChallenges = function(){
+        for (var i=0; i< $scope.contrib_challenges.length; i++){
+          if ($scope.contrib_challenges[i].trim()==""){
+            return false;
+          }
+        }
+
+        return true;
+      };
+
+      $scope.validUserTests = function(){
+        for (var i=0; i< $scope.contrib_tests.length; i++){
+          if ($scope.contrib_tests[i].trim()==""){
+            return false;
+          }
+        }
+
+        return $scope.success_setup.trim()!="";
       };
 
       $scope.uploadFiles = function(){
@@ -50,6 +69,7 @@
         if ($scope.uploader.queue.length == 0){
           return null;
         }
+        
         for (var i = 0; i< $scope.uploader.queue.length; i++){
           $scope.uploader.queue[i].upload();
         }
@@ -77,7 +97,7 @@
         return null;
       };
 
-      $scope.checkContributor = function(){
+      $scope.checkChallenges = function(){
 
         var form_data = {};
         form_data.mode = "contributor_check";
@@ -117,7 +137,7 @@
           form_data.tests.push($scope.contrib_tests[i]);
         }
 
-        form_data.ps = ($scope.success_setup==null)? "" : $scope.prbsub.trim();
+        form_data.ps = $scope.success_setup.trim();
 
         $http.post('', form_data).
             success(function(data, status, headers, config) {
@@ -338,7 +358,7 @@
                   <div class="row" ng-repeat = "t in $parent.contrib_challenges">
                     <label>Check {{$parent.contrib_challenges.indexOf(t) + 1}}</label>
                     <textarea ng-model="t[0]" disabled rows="1" cols="38" style="resize:none;">
-                      thingy
+                      
                     </textarea>  
                     <textarea ng-model="t[1]" disabled rows="1" cols="10" style="resize:none;">
                       
@@ -400,22 +420,15 @@
                             Add Test
                           </span>
                       </a>
-                    </div>
-                  </div>
-                  <!-- Add Tests ending-->
-
-                  <!-- Remove Tests button -->
-                  <div class="row">
-                    <div class="col-md-2 col-md-offset-3">
                       <a href="">
-                          <span class="glyphicon glyphicon-plus" ng-click="removeTestCase()">
+                          <span class="glyphicon glyphicon-minus" ng-click="removeTestCase()">
                             Remove Test
                           </span>
                       </a>
                     </div>
                   </div>
                   <!-- Add Tests ending-->
-   
+  
                
                   <div class="row">
                     <button class="btn btn-success" ng-click="submitContributor()"> Submit </button>
