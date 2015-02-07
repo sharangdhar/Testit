@@ -39,6 +39,7 @@
       $scope.sorry_m = false;
       $scope.problem_id = "";
       var challenges = [];
+      $scope.tests_m = false;
 
       var test_cases = [];
       var test_text = "";
@@ -194,29 +195,18 @@
           form_data.tests.push($scope.contrib_tests[i]);
         }
 
-        form_data.setup = $scope.success_setup.trim();
+        form_data.setup = ($scope.success_setup == null) ? "" : $scope.success_setup.trim();
         form_data.problem_id = $scope.problem_id;
-        console.log("problem_id: " + problem_id);
+        console.log("problem_id: " + $scope.problem_id);
 
         console.log('sending post');
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               // this callback will be called asynchronously
               // when the response is available
-              $scope.uploader.clearQueue();
-              console.log("data :" + data);
-              console.log("status: " + status);
-              console.log("headers: " + headers);
-              console.log("config: " + config);
-              if (data == "All tests passed!"){
-                $scope.challenges_m= true;
-              } else {
-                $scope.success_f = true;
-                $scope.success_message = data + "   ";
-              }
+
             }).
             error(function(data, status, headers, config) {
-              $scope.uploader.clearQueue();
               // called asynchronously if an error occurs
               // or server returns response with an error status.
             });
@@ -462,7 +452,7 @@
   <button class="btn btn-success" ng-click="setPage('success')"> Continue </button>
 </modal-dialog>
 
-<modal-dialog show='false' dialog-title='Your Tests Compiled!'>
+<modal-dialog show='tests_m' dialog-title='Your Tests Compiled!'>
   <button class="btn btn-success" ng-click="setPage('profile')"> Continue </button>
 </modal-dialog>
 
@@ -710,7 +700,7 @@
   
                
                   <div class="row">
-                    <button class="btn btn-success" ng-click="submitContributor()"> Submit </button>
+                    <button class="btn btn-success" ng-click="submitContributorTests()"> Submit </button>
                   </div>
               </div>
         </form>
