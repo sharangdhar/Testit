@@ -48,7 +48,9 @@ class handler (BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-        if self.headers['Content-type'] == "application/json;charset=utf-8":
+        match = re.search("application/json", self.headers['Content-type'])
+
+        if match:
             try:
                 data_string = self.rfile.read(int(self.headers['Content-Length']))
             except:
