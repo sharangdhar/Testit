@@ -64,5 +64,25 @@ def getHTML(userid):
   subsol = probinfo["subsol"]
   probid = probinfo["probid"]
   timestamp = probinfo["time"]
-  ret = ""
+  ret = '''<div class = "container">\n
+             <div class = "raw">\n
+               <img src = '+imgpath+'>\n
+               <H3 class = "col">'+name+'</H3>\n
+               <Br>
+               <H4 class = "">'+info+'</H4>\n
+             </div>
+             <div class = "raw">\n
+               <table>\n
+                 <th>\n
+                   <td>'+probid+'</td>\n
+                   <td>'+timstamp+'</td>\n
+                 </th>\n
+                 <tr>\n
+                   <td>'+'____'+'</td>\n
+                   <td>'+'____'+'</td>\n
+                   <td>'+'____'+'</td>\n
+                 </tr>\n
+               </table>\n
+             </div>\n
+           </div>'''
   return ret
