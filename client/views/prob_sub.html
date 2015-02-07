@@ -1,0 +1,39 @@
+<div class="container ">
+     <div ng-if="isAuthenticated() && currentUser.username">
+      <div class="row text-center">
+        <h4 for="prbsub">Problem Submission</h4>
+      </div>
+      <div class="row">
+        <form role="form">
+              <div class="form-group text-center">
+                  <textarea id="prbsub" rows="13" cols="100" style="resize:none;">
+                    Type problem here ....
+                  </textarea>
+                  <br>
+                  <div class="row">
+                  <label for="assert1">Test 1:</label>
+                    <textarea id="assert1" rows="1" cols="93" style="resize:none;">
+                      test 1 here ..
+                    </textarea>
+                  </div>
+                  <div class="row">
+                    <label for="assert2">Test 2:</label>
+                    <textarea id="assert2" rows="1" cols="93" style="resize:none;">
+                      test 2 here ..
+                    </textarea>
+                  </div>
+                  <div class='row'>
+                    <label for="assert3">Test 3:</label>
+                    <textarea id="assert3" rows="1" cols="93" style="resize:none;">
+                      test 3 here ..
+                    </textarea>
+                  </div>
+                  <button align="center" type="button" class="btn btn-primary">Upload Code</button> 
+                  <button align="center" type="button" class="btn btn-success">Submit</button> 
+              </div>
+        </form>
+        <!-- Form ends here -->
+      </div>
+      <!-- Outermost row ends here -->
+    </div>
+</div>
