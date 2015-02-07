@@ -230,7 +230,7 @@ class handler (BaseHTTPRequestHandler):
         all_tests = data['tests']
         user_setup = data['setup']
 
-        for i in length(all_tests):
+        for i in len(all_tests):
             file = open("data/env/env_" + str(tid) + "/testit.py", "a")
             file.write("\n\n")
             file.write(user_setup)
