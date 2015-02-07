@@ -9,23 +9,33 @@
   
   <link href="css/bootstrap.min.css" rel="stylesheet"></link>
   <link href="css/form-signin.css" rel="stylesheet"></link>
+
   <script src="js/jquery-1.9.1.js" type='text/javascript'></script>
   <script src="js/jquery-ui-1.10.3.custom.min.js" type='text/javascript'></script> 
   <script src="js/jquery-1.11.2.min.js" type='text/javascript'></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/bootstrap.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+  <script src="https://rawgit.com/Ciul/angular-facebook/master/lib/angular-facebook.js"></script> 
   <script src = "https://cdn.rawgit.com/nervgh/angular-file-upload/master/angular-file-upload.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.6/es5-shim.min.js"></script>
   <script src="https://rawgit.com/adamalbrecht/ngModal/master/dist/ng-modal.min.js"></script>
   <link href="https://rawgit.com/adamalbrecht/ngModal/master/dist/ng-modal.css" rel="stylesheet"></link>
   <script src="https://rawgit.com/lorenzofox3/Smart-Table/master/dist/smart-table.min.js"></script>
+  <!-- <script src="https://rawgit.com/Ciul/angular-facebook/master/lib/angular-facebook.js"></script> -->
   <script>
-    var demoApp = angular.module('demoApp',['angularFileUpload','ngModal','smart-table']);
 
-    function MainController ($scope, $http, $location, FileUploader){
+    var demoApp = angular.module('demoApp',['angularFileUpload','ngModal','smart-table','facebook']);
+    demoApp.config(function(FacebookProvider) {
+       // Set your appId through the setAppId method or
+       // use the shortcut in the initialize method directly.
+       FacebookProvider.init('1562010654040284');
+    })
+
+
+    function MainController ($scope, $http, $location, FileUploader, Facebook){
       $scope.uploader = new FileUploader();
-      $scope.current_page = "landing";
+      $scope.current_page = "profile";
       $scope.contrib_problem = "the problem";
       $scope.contrib_tests = [["","",""],["","",""],["","",""]];
       $scope.contrib_challenges = [["","",""],["","",""],["","",""]];
@@ -50,9 +60,29 @@
       $scope.assert_10 = "5*2";
       $scope.assert_11 = "==";
       $scope.assert_12 = "9";
-      $scope.success_setup = "Initialization Code:\n\nUse this box to add code that will come before your test cases";
+      $scope.success_setup = "";
+      $scope.loggedIn = false;
+      $scope.user_id = "";
       var test_cases = [];
       var test_text = "";
+
+      /*
+      $scope.init = function(){
+        Facebook.getLoginStatus(function(response) {
+          if(response.status === 'connected') {
+            $scope.loggedIn = true;
+            Facebook.api('/me', function(response) {
+              $scope.user_id = response.id;
+              console.log("user id :" + $scope.user_id);
+              $scope.current_page = "profile";
+              console.log($scope.current_page);
+            });
+
+          } else {
+            $scope.loggedIn = false;
+          }
+        });
+      }; */
 
       $scope.setPage = function(page){
         $scope.current_page = page;
@@ -298,111 +328,9 @@
     demoApp.controller('MainController',MainController);
   </script>
 
-  <!-- Facebook Login Script -->
-  <!-- Setting up the SDK -->
 <script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1562010654040284',
-      xfbml      : true,
-      version    : 'v2.2'
-    });
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
+  
 </script>
-<!-- Setting up SDK done -->
-
-<script>
-  // This is called with the results from from FB.getLoginStatus().
-  function statusChangeCallback(response) {
-    console.log('statusChangeCallback');
-    console.log(response);
-    // The response object is returned with a status field that lets the
-    // app know the current login status of the person.
-    // Full docs on the response object can be found in the documentation
-    // for FB.getLoginStatus().
-    if (response.status === 'connected') {
-      // Logged into your app and Facebook.
-      testAPI();
-    } else if (response.status === 'not_authorized') {
-      // The person is logged into Facebook, but not your app.
-      console.log('Please log into this app.');
-    } else {
-      // The person is not logged into Facebook, so we're not sure if
-      // they are logged into this app or not.
-      console.log('Please log into this app.');
-    }
-  }
-
-  // This function is called when someone finishes with the Login
-  // Button.  See the onlogin handler attached to it in the sample
-  // code below.
-  function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-      statusChangeCallback(response);
-    });
-  }
-
-  window.fbAsyncInit = function() {
-  FB.init({
-    appId      : '1562010654040284',
-    cookie     : true,  // enable cookies to allow the server to access 
-                        // the session
-    xfbml      : true,  // parse social plugins on this page
-    version    : 'v2.1' // use version 2.1
-  });
-
-  // Now that we've initialized the JavaScript SDK, we call 
-  // FB.getLoginStatus().  This function gets the state of the
-  // person visiting this page and can return one of three states to
-  // the callback you provide.  They can be:
-  //
-  // 1. Logged into your app ('connected')
-  // 2. Logged into Facebook, but not your app ('not_authorized')
-  // 3. Not logged into Facebook and can't tell if they are logged into
-  //    your app or not.
-  //
-  // These three cases are handled in the callback function.
-
-  FB.getLoginStatus(function(response) {
-    statusChangeCallback(response);
-  });
-
-  };
-
-  // Load the SDK asynchronously
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-
-  // Here we run a very simple test of the Graph API after login is
-  // successful.  See statusChangeCallback() for when this call is made.
-  function testAPI() {
-    console.log('Welcome!  Fetching your information.... ');
-    FB.api('/me', function(response) {
-      console.log('Successful login for: ' + response.name);
-    });
-  }
-</script>
-<script>
-  !function ($) {
-    $(function(){
-      window.prettyPrint && prettyPrint()
-    })
-  }(window.jQuery)
-</script>
-<!-- Facebook Login ends -->
   <style>
             .my-drop-zone { border: dotted 3px lightgray; text-align:center;}
             .nv-file-over { border: dotted 3px red; text-align:center;} /* Default class applied to drop zones on over */
@@ -432,7 +360,6 @@
         
            <!-- <li><a href="">Home</a></li> -->  
 
-            <li ><a ng-click="setPage('home')">Home</a></li>
             <li ><a ng-click="setPage('profile')">Profile</a></li>
             <li><a ng-click="setPage('submission')">Submission Page</a></li>
             <li><a ng-click="getProblem(); setPage('contribution')">Challenge</a></li>
@@ -446,10 +373,9 @@
 <br />
 
 
-
-<!-- Login Page starts -->
 <!--
-<modal-dialog show="current_page ='lll'" dialog-title="Welcome to testIt!">
+
+<modal-dialog show="loggedIn == false" ng-init="init()">
   <div class="container">
     <div class="row text-center">
         <div class="col-md-4">
@@ -467,8 +393,7 @@
          </div>
      </div>
  </div>
- </modal-dialog> -->
-
+<modal-dialog> -->
 <!-- Login Page ends -->
 
 <!-- Modal Dialogs-->
@@ -479,7 +404,7 @@
 </div>
 
 <div class="row text-center">
-<modal-dialog show='success_m' dialog-title='Problem Uploaded!' on-close="setPage('profile'); closeSuccess()">
+<modal-dialog show='success_m' dialog-title='Problem Uploaded!' on-close="setPage('profile'); closeSuccess();">
   <div class="row text-center">
     Your problem has been uploaded to our servers! 
   </div>
@@ -499,7 +424,7 @@
 </div>
 
 <div class="row text-center">
-<modal-dialog show='tests_m' dialog-title='Tests Submitted!' on-close="setPage('profile'); closeTests()">
+<modal-dialog show='tests_m' dialog-title='Tests Submitted!' on-close="setPage('contrib_results'); closeTests()">
   Way to go! Close this window to see the results of your tests.
 </modal-dialog>
 </div>
@@ -761,30 +686,11 @@
 
     </div>
 
-<br />
-<br />
-<table st-table="table_demo" st-safe-src="table_demo" class="table table-striped" ng-if="current_page== 'contrib_result'" >
-  <thead>
-  <tr>
-    <th st-sort="coolness">Function</th>
-    <th st-sort="coolness" st-sort-default="reverse">Result</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr ng-repeat="row in table_demo">
-    <td>{{row.name}}</td>
-    <td>{{row.coolness}}</td>
-  </tr>
-  </tbody>
-</table>
-
     <!-- Success Page ends -->
 
-
-    <!-- Profile Page Starts -->
-
-    <div class="container" ng-if="current_page == 'profile'">
+<div class="container" ng-if="current_page == 'profile'">
    <div class="account-wall">
+    <h2> User Profile </h2>
     <div class="row text-left">
           <div class="col-md-6">
           <div class="modal-body" style="text-align:center;">
@@ -817,6 +723,7 @@
       </div>
       </div>
       <div class="col-md-6">
+         <br/> <br/> <br/>
         <table st-table="test_data" st-safe-src="test_data" class="table table-striped" >
           <thead>
           <tr>
@@ -831,6 +738,68 @@
           </tr>
           </tbody>
         </table>
+
+      </div>
+
+</div>
+</div>
+</div>
+
+
+
+    <!-- Profile Page Starts -->
+
+<div class="container" ng-if="current_page == 'contrib_results'">
+   <div class="account-wall">
+    <h2> Test Case Results </h2>
+    <div class="row text-left">
+          <div class="col-md-6">
+          <div class="modal-body" style="text-align:center;">
+         
+          <div class="row-fluid">
+          
+          <div class="tab-content">
+          
+          <img src="images/sharang.jpg" name="aboutme" width="140" height="140" border="0" class="img-circle">
+          <br>
+          <br>
+            <h3 class="media-heading">Sharangdhar <small> USA</small></h3>
+            <br>
+                      <h4><strong>My Skills </strong></h4>
+                      <br>
+                      <span class="label label-warning">HTML5/CSS</span>
+                      <span class="label label-info">Adobe CS 5.5</span>
+                      <span class="label label-info">Microsoft Office</span>
+                      <span class="label label-success">Windows XP, Vista, 7</span>
+
+         
+            <br>
+            <h5><strong>About</strong></h5>
+          <p class="text-center">
+          Anything about yourself.</p>
+            <br>
+          
+          </div>
+          </div>
+      </div>
+      </div>
+      <div class="col-md-6">
+         <br/> <br/> <br/>
+        
+        <table st-table="test_data" st-safe-src="test_data" class="table table-striped" >
+          <thead>
+          <tr>
+            <th st-sort="result">Function</th>
+            <th st-sort="result" st-sort-default="reverse">Result</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="row in test_data">
+            <td>{{row.func}}</td>
+            <td>{{row.result}}</td>
+          </tr>
+          </tbody>
+        </table> 
 
       </div>
 
