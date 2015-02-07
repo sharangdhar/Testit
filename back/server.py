@@ -178,7 +178,6 @@ class handler (BaseHTTPRequestHandler):
                    + data['tests'][1]['a22'] + " )\n")
         file.write("assert( " + data['tests'][2]['a30'] + data['tests'][2]['a31'] 
                    + data['tests'][2]['a32'] + " )\n")
-
         file.close()
 
         try:            
@@ -190,7 +189,31 @@ class handler (BaseHTTPRequestHandler):
             self.wfile.write("Error detected! One or more test cases failed!")
 
     def handle_contributor_tests(self, data):
-        pass
+        print "Success"
+        
+        tid = data['problem_id']
+        # Need to add files to display page
+        
+
+        all_tests = data['tests']
+        user_setup = data['setup']
+
+
+        for i in length(all_tests):
+            file = open("data/env/env_" + str(tid) + "/testit.py", "a")
+            file.write("\n\n")
+            file.write(user_setup)
+            file.write("assert("+all_tests[i,0]+all_tests[i,1]+all_tests[i,2]+" )\n")     
+            try:
+                os.chdir("data/env/env_" + str(tid))
+                x=subprocess.check_call(["python", "testit.py"])
+                arr[i] = "Passed"
+            except:      
+                arr[i] = "Failed"
+            os.chdir("../../..")
+
+        self.wfile.write(arr)
+
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
