@@ -187,21 +187,20 @@ class handler (BaseHTTPRequestHandler):
 
         all_tests = data['tests']
         
+        os.chdir("data/env/env_" + str(tid))
         for test in all_tests:
-            
             file.write("\n\n")
             file.write(user_setup)
             file.write("assert("+test[0]+test[1]+test[2]+" )\n")     
-            try:
-                os.chdir("data/env/env_" + str(tid))
-                x=subprocess.check_call(["python", "testit.py"])
-                arr[i] = "Passed"
-            except:      
-                arr[i] = "Failed"
-            os.chdir("../../..")
+            file.close()
 
-        self.wfile.write(arr)
-        self.write("/n/n/n")
+        try:
+            x=subprocess.check_call(["python", "testit.py"])
+        except:
+            self.wfile.write("Error detected! One or more test cases failed!")
+
+        os.chdir("../../..")
+        self.wfile.write("All tests passed!")
 
     def handle_contributor_tests(self, data):
         print "Success"
@@ -214,19 +213,29 @@ class handler (BaseHTTPRequestHandler):
         arr = [0] * len(all_tests)
         i=0
 
+
+        file = open("data/env/env_" + str(tid) + "/testit.py", "a")
+        file.write("\n\n")
+        file.write(user_setup)
+        os.chdir("data/env/env_" + str(tid))
+        pos = file.tell()
+
         for test in all_tests:
-            file = open("data/env/env_" + str(tid) + "/testit.py", "a")
-            file.write("\n\n")
-            file.write(user_setup)
-            file.write("assert("+test[0]+test[1]+test[2]+" )\n")     
+            file.write("assert("+test[0]+test[1]+test[2]+" )\n")
+            file.close()
+
             try:
-                os.chdir("data/env/env_" + str(tid))
                 x=subprocess.check_call(["python", "testit.py"])
                 arr[i] = "Passed"
             except:
                 arr[i] = "Failed"
-            i=1+i
-            os.chdir("../../..")
+            i=i+1
+            file = open("testit.py", "a")
+            file.seek(pos, os.SEEK_SET)
+            file.truncate(pos)
+
+        os.chdir("../../..")
+        file.close()
 
         self.wfile.write("OK")
 
