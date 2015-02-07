@@ -78,11 +78,9 @@
         form_data.mode = "contributor";
 
         form_data.tests = [];
-        form_data.tests.push({a10: $scope.assert_10, a11: $scope.assert_11, a12: $scope.assert_12});
-        form_data.tests.push({a20: $scope.assert_20, a21: $scope.assert_21, a22: $scope.assert_22});
-        form_data.tests.push({a30: $scope.assert_30, a31: $scope.assert_31, a32: $scope.assert_32});
-
-        form_data.ps = ($scope.prbsub==null)? "" : $scope.prbsub.trim();
+        form_data.tests.push({a10: $scope.check_10, a11: $scope.check_11, a12: $scope.check_12});
+        form_data.tests.push({a20: $scope.check_20, a21: $scope.check_21, a22: $scope.check_22});
+        form_data.tests.push({a30: $scope.check_30, a31: $scope.check_31, a32: $scope.check_32});
 
         console.log('sending post');
         $http.post('', form_data).
@@ -95,6 +93,12 @@
               // or server returns response with an error status.
             });
         return null;
+      };
+
+      $scope.submitContributor = function(){
+        for (var i = 0; i< $scope.uploader.queue.length; i++){
+          $scope.uploader.queue[i].upload();
+        }
       };
     }
 
@@ -282,7 +286,7 @@
       <div class="row">
         <form role="form">
               <div class="form-group text-center">
-                   <textarea ng-model="check" rows="10" cols="105" style="resize:none;">
+                   <textarea ng-model="$parent.check" rows="10" cols="105" style="resize:none;">
                       {{contrib_problem}}
                   </textarea>  
                   <br>
@@ -293,13 +297,13 @@
                   <!-- test1 starting -->
                   <div class="row">
                     <label for="check_10">Check 1:</label>
-                    <textarea ng-model="check_10" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.check_10" rows="1" cols="38" style="resize:none;">
                       Put solution here
                     </textarea>  
-                    <textarea ng-model="check_11" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="$parent.check_11" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea ng-model="check_12" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.check_12" rows="1" cols="38" style="resize:none;">
                       Put solution here
                     </textarea>
                   </div>
@@ -308,13 +312,13 @@
                   <!-- test 2 starting -->
                   <div class="row">
                     <label for="check_20">Check 2:</label>
-                    <textarea ng-model="check_20" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.check_20" rows="1" cols="38" style="resize:none;">
                       Put solution here
                     </textarea>  
-                    <textarea ng-model="check_21" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="$parent.check_21" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea ng-model="check_22" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.check_22" rows="1" cols="38" style="resize:none;">
                       Put solution here
                     </textarea>
                   </div>
@@ -323,13 +327,13 @@
                   <!-- test 3 starting -->
                   <div class="row">
                     <label for="check_30">Check 3:</label>
-                    <textarea ng-model="check_30" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.check_30" rows="1" cols="38" style="resize:none;">
                       Put solution here
                     </textarea>  
-                    <textarea ng-model="check_31" rows="1" cols="10" style="resize:none;">
+                    <textarea ng-model="$parent.check_31" rows="1" cols="10" style="resize:none;">
                       equal
                     </textarea>
-                    <textarea ng-model="check_32" rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="$parent.check_32" rows="1" cols="38" style="resize:none;">
                       Put solution here
                     </textarea>
                   </div>
@@ -350,7 +354,7 @@
 
     <!-- Success Page starts -->
 
-<div class="container" ng-if="current_page == 'success'">
+<div class="container" ng-if="current_page != 'success'">
       <div class="row text-center">
         <h4 for="prbsub">Contribute Your Solution</h4>
       </div>
