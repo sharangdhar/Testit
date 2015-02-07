@@ -57,11 +57,12 @@ class handler (BaseHTTPRequestHandler):
                 return        
             if data['mode'] == 'submission':
                 global tid
-                try: 
-                    check = open("data/checks/check_" + str(tid) + ".json", "w")
-                    check.write(data_string)
-                except:
-                    return
+                #try: 
+                check = open("data/checks/check_" + str(tid) + ".json", "w")
+                check.write(data_string)
+                check.close()
+                #except:
+                 #   return
                 self.handle_submission(data)
             elif data['mode'] == 'contributor_check':
                 self.handle_contributor_check(data)
@@ -148,12 +149,12 @@ class handler (BaseHTTPRequestHandler):
         try:
             os.chdir("data/env/env_" + str(tid))
             x = subprocess.check_call(["python", "testit.py"])
-            os.chdir("../../..")
             self.wfile.write("All tests passed!")
         except:      
             self.wfile.write("Error detected! One or more test cases failed!")
             os.system("rm -rf data/env/env_" + str(tid))
 
+        os.chdir("../../..")
         tid = tid + 1
 
     def handle_contributor_check(data):
