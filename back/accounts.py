@@ -36,6 +36,7 @@ def addProb(uid, prob, numTests):
     file.close()
 
     user = getUser(uid)
+    print uid
 
     user[2] += [prob]
     user[3] += [datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")]

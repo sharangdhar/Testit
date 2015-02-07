@@ -89,7 +89,7 @@
                     form_data.mode = "profile";
                     $http.post('', form_data).
                     success(function(data, status, headers, config) {
-                        console.log("data :" + data);
+                        console.log("data :" + JSON.stringify(data));
                     }).
                     error(function(data, status, headers, config) {
                       // called asynchronously if an error occurs
@@ -110,6 +110,23 @@
           }
         });
         console.log("log status :" + $scope.loggedIn)
+      };
+
+      $scope.setProfile = function(){
+        console.log("setting the profile");
+        var form_data = {};
+        form_data.mode = "profile";
+        form_data.uid = $scope.user_id;
+
+        $http.post('', form_data).
+          success(function(data, status, headers, config) {
+              console.log("data :" + JSON.stringify(data));
+          }).
+          error(function(data, status, headers, config) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+          });
+
       };
 
       $scope.setPage = function(page){
@@ -183,6 +200,7 @@
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               $scope.uploader.clearQueue();
+              console.log("\nupload\n");
               console.log("data :" + data);
               console.log("status: " + status);
               console.log("headers: " + headers);
@@ -229,7 +247,7 @@
         console.log("data tests: " + form_data.tests);
         form_data.problem_id = $scope.problem_id;
         console.log("problem id: " + form_data.problem_id);
-        form_data.uid = "jk94";
+        form_data.uid = $scope.used_id;
 
         console.log('sending post');
         $http.post('', form_data).
@@ -265,7 +283,7 @@
 
         form_data.setup = ($scope.success_setup == null) ? "" : $scope.success_setup.trim();
         form_data.problem_id = $scope.problem_id;
-        form_data.uid = "jk94";
+        form_data.uid = $scope.user_id;
 
         $http.post('', form_data).
             success(function(data, status, headers, config) {
@@ -289,7 +307,7 @@
       
       var form_data = {};
       form_data.mode = "contributor_tid";
-      form_data.uid = "jk94";
+      form_data.uid = $scope.user_id;
 
       $http.post('', form_data).
             success(function(data, status, headers, config) {
@@ -411,7 +429,7 @@
 </div>
 
 <div class="row text-center">
-<modal-dialog show='success_m' dialog-title='Problem Uploaded!' on-close="setPage('profile'); closeSuccess();">
+<modal-dialog show='success_m' dialog-title='Problem Uploaded!' on-close="setPage('profile'); closeSuccess();setProfile();">
   <div class="row text-center">
     Your problem has been uploaded to our servers! 
   </div>
@@ -431,7 +449,7 @@
 </div>
 
 <div class="row text-center">
-<modal-dialog show='tests_m' dialog-title='Tests Submitted!' on-close="setPage('contrib_results'); closeTests()">
+<modal-dialog show='tests_m' dialog-title='Tests Submitted!' on-close="setProfile();setPage('contrib_results'); closeTests()">
   Way to go! Close this window to see the results of your tests.
 </modal-dialog>
 </div>
