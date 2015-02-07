@@ -172,7 +172,6 @@ class handler (BaseHTTPRequestHandler):
                 data['problem_id'] = str(tid)
                 self.wfile.write(json.dumps(data))
             else:
-                print "AHH"
                 self.wfile.write("-1")
                 return
 
@@ -206,13 +205,14 @@ class handler (BaseHTTPRequestHandler):
         
         all_tests = data['tests']
         user_setup = data['setup']
-        arr = [0] * len(all_tests)
+        arr = {}
         i=0
 
 
         file = open("data/env/env_" + str(tid) + "/testit.py", "a")
         file.write("\n\n")
         file.write(user_setup)
+        file.write("\n\n")
         os.chdir("data/env/env_" + str(tid))
         pos = file.tell()
 
@@ -222,9 +222,9 @@ class handler (BaseHTTPRequestHandler):
 
             try:
                 x=subprocess.check_call(["python", "testit.py"])
-                arr[i] = "Passed"
+                arr[test[0]+test[1]+test[2]] = "Passed"
             except:
-                arr[i] = "Failed"
+                arr[test[0]+test[1]+test[2]] = "Failed"
             i=i+1
             file = open("testit.py", "a")
             file.seek(pos, os.SEEK_SET)
