@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="Instagram">
+<html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,14 +16,24 @@
   <script src="js/jquery-1.11.2.min.js" type='text/javascript'></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/bootstrap.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
   <script>
+    var demoApp = angular.module('demoApp',[]);
+    function MainController ($scope, $http, $location){
+      $scope.current_page = "landing";
 
+      $scope.setPage = function(page){
+        $scope.current_page = page;
+      };
+    }
+
+    demoApp.controller('MainController',MainController);
   </script>
 
 </head>
-<body>
+<body ng-app="demoApp" ng-controller="MainController">
 
-<div class="navbar navbar-inverse navbar-fixed-top" position="static" role="navigation">
+  <div class="navbar navbar-inverse navbar-fixed-top" position="static" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
 
@@ -40,19 +50,24 @@
         
            <!-- <li><a href="">Home</a></li> -->
            
-              <li ><a href="">Profile</a></li>
-
-            <li><a href="views/prob_sub">Submission Page</a></li>
-          
-            <li><a href="">Contributor Page</a></li>
-             <li><a href="views/developers.html">Developers</a></li>
-
+            <li ><a ng-click="setPage(profile)">Profile</a></li>
+            <li><a ng-click="setPage(submission)">Submission Page</a></li>
+            <li><a ng-click="setPage(contributor)">Contributor Page</a></li>
+            <li><a ng-click="setPage(developers)">Developers</a></li>
           
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
-
+  <br />
+  <br />
+  <br />
+  <div ng-show="{{8==8}}">
+    what a world
+  </div>
+  <div ng-show="{{7==8}}">
+    ikr
+  </div>
 <!--
 <div ng-controller="NavbarCtrl" class="navbar navbar-default navbar-static-top">
   <div class="container">
