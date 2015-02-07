@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Instagram - Powered by Satellizer</title>
+  <title>TestIt Homepage</title>
  
   
   <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -21,17 +21,40 @@
     function MainController ($scope, $http, $location, FileUploader){
       $scope.uploader = new FileUploader();
       $scope.current_page = "landing";
+      var test_cases = [];
+      var test_text = "";
 
       $scope.setPage = function(page){
         $scope.current_page = page;
+      };
+
+      $scope.validSubmissions = function(){
+        /*test_cases = [$scope.assert_10, $scope.assert_11, $scope.assert_12, $scope.assert_20, $scope.assert_21, $scope.assert_22,
+                      $scope.assert_30, $scope.assert_31, $scope.assert_32]; */
+        for (var i=0; i< test.cases.length; i++){
+          test_cases[i] = test_cases[i].trim();
+          if (test_cases[i]==""){
+            return false;
+          }
+        }
+
+        /*test_text= $scope.prbsub.trim();*/
+        return (test_text=="") ? false : true;
+      };
+
+      $scope.uploadFiles = function(){
+        for (var item in $scope.uploader.queue){
+          item.upload();
+        }
+        return null;
       };
     }
 
     demoApp.controller('MainController',MainController);
   </script>
   <style>
-            .my-drop-zone { border: dotted 3px lightgray; }
-            .nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
+            .my-drop-zone { border: dotted 3px lightgray; position:center;}
+            .nv-file-over { border: dotted 3px red; position:center;} /* Default class applied to drop zones on over */
             .another-file-over-class { border: dotted 3px green; }
             html, body { height: 100%; }
   </style>
@@ -69,14 +92,10 @@
   <br />
   <br />
 
-<div class="row text-center">
-  <div class="col-md-4">
-    <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
-        Base drop zone
-    </div>
-  <div>
-<div>
 
+
+<br />
+<br />
 <ul>
     <li ng-repeat="item in uploader.queue">
         Name: <span ng-bind="item.file.name"></span><br/>
@@ -193,10 +212,16 @@
                     </textarea>
                   </div>
                   <!-- test 3 ending -->
-
-                  <br>
-                  <div class='row'>
-                    <button align="center" type="button" class="btn btn-success">Submit</button> 
+                  <!-- upload file -->
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
+                          Base drop zone
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <button ng-click="uploadFiles()"> UPLOAD ALL FILES</button>
                   </div>
               </div>
         </form>
@@ -207,12 +232,6 @@
     </div>
 
 <!-- Problem Submission Ending -->
-
-
-
-
-
-
 
 </body>
 </html>
