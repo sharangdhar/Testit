@@ -30,6 +30,8 @@
       $scope.contrib_tests = [["","",""],["","",""],["","",""]];
       $scope.contrib_challenges = [["","",""],["","",""],["","",""]];
       $scope.drop_text = "Drop Code Folder/Files here";
+      $scope.incomplete = false;
+      $scope.incomplete_message= "";
       $scope.success_m= false;
       $scope.success_f = false;
       $scope.success_message= "";
@@ -43,16 +45,15 @@
       };
 
       $scope.validSubmission = function(){
-        test_cases = [$scope.assert_10, $scope.assert_11, $scope.assert_12, $scope.assert_20, $scope.assert_21, $scope.assert_22,
-                      $scope.assert_30, $scope.assert_31, $scope.assert_32];
-        for (var i=0; i< test.cases.length; i++){
-          test_cases[i] = test_cases[i].trim();
-          if (test_cases[i]==""){
+        test_cases = [$scope.assert_10, $scope.assert_11, $scope.assert_12, $scope.assert_20, $scope.assert_21, $scope.assert_22,$scope.assert_30, $scope.assert_31, $scope.assert_32];
+
+        for (var i=0; i< test_cases.length; i++){
+          if (test_cases[i]==null || test_cases[i].trim()==""){
             return false;
           }
         }
         
-        return $scope.prbsub.trim()!="";
+        return true;
       };
 
       $scope.validChallenges = function(){
@@ -77,6 +78,15 @@
 
       $scope.uploadFiles = function(){
         
+        if(!$scope.validSubmission()){
+          $scope.incomplete = true;
+          $scope.incomplete_message = "One or more required fields was not filled out.";
+          return null;
+        } else if ($scope.uploader.queue.length == 0){
+          $scope.incomplete = true;
+          $scope.incomplete_message = "No upload file detected.";
+          return null;
+        }
         
         for (var i = 0; i< $scope.uploader.queue.length; i++){
           $scope.uploader.queue[i].upload();
@@ -352,8 +362,12 @@
 
 
 <!-- Modal Dialogs-->
+<modal-dialog show='incomplete' dialog-title='Incomplete Submission'>
+{{incomplete_message}}
+</modal-dialog>
+
 <modal-dialog show='success_m ' dialog-title='Your Submission Compiled!'>
-  <button class="btn btn-success" ng-click=""> Continue </button>
+  <button class="btn btn-success" ng-click="setPage('profile')"> Continue </button>
 </modal-dialog>
 
 <modal-dialog show='success_f' dialog-title='Your Submission Did Not Compile'>
@@ -492,13 +506,15 @@
                       </div>
                   </div>
                   <div class="row">
-                    <button class="btn btn-success" ng-click="uploadFiles()"> Upload </button>
-                  </div>
-                  <div class="row">
                     <li ng-repeat="item in uploader.queue">
                         Name: <span ng-bind="item.file.name"></span><br/>
                     </li>
+                  </div> <br/ > <br />
+
+                  <div class="row">
+                    <button class="btn btn-success" ng-click="uploadFiles()"> Upload </button>
                   </div>
+                  
               </div>
         </form>
         <!-- Form ends here -->
