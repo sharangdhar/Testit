@@ -63,6 +63,7 @@
       $scope.success_setup = "";
       $scope.loggedIn = false;
       $scope.user_id = "";
+      $scope.user_data = [];
       var test_cases = [];
       var test_text = "";
 
@@ -70,7 +71,39 @@
         Facebook.getLoginStatus(function(response) {
           if(response.status === 'connected') {
             $scope.loggedIn = true;
-            consloe.log("logged in");
+            console.log("logged in");
+             Facebook.api('/me', function(response) {
+              $scope.user_id = response.id;
+              console.log("user_id :" + $scope.user_id);
+
+
+              var form_data = {};
+              form_data.mode = "login";
+              form_data.uid = $scope.user_id;
+
+              console.log('sending post');
+              $http.post('', form_data).
+                  success(function(data, status, headers, config) {
+                    
+                    form_data.mode = "profile";
+                    $http.post('', form_data).
+                    success(function(data, status, headers, config) {
+                        console.log("data :" + data);
+                    }).
+                    error(function(data, status, headers, config) {
+                      // called asynchronously if an error occurs
+                      // or server returns response with an error status.
+                    });
+
+
+
+                  }).
+                  error(function(data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                  });
+
+            });
           } else {
             $scope.loggedIn = false;
           }
