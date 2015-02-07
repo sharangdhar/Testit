@@ -179,6 +179,48 @@ class handler (BaseHTTPRequestHandler):
 
     def handle_contributor_check(self, data):
         print "CONTRIBUTION!!"
+        global tid
+
+        try:
+            env = zipfile.ZipFile("data/env/env_" + str(tid) + ".zip", "r")
+            if not os.path.exists("data/env/env_" + str(tid)):
+                os.mkdir("data/env/env_" + str(tid))
+            else:
+                os.system("rm -rf data/env/env_" + str(tid))
+                os.mkdir("data/env/env_" + str(tid))
+            env.extractall("data/env/env_" + str(tid) + "/")
+            os.remove("data/env/env_" + str(tid) + ".zip")
+        except:
+            self.wfile.write("File submitted was not a zip file!")
+            return
+
+        if not os.path.exists("data/env/env_" + str(tid) + "/testit.py"):
+            self.wfile.write("testit.py not found in submitted environment zip file!")
+            return
+
+        file = open("data/env/env_" + str(tid) + "/testit.py", "a")
+        file.write("\n\n")
+
+        file.write("assert( " + data['tests'][0]['a10'] + data['tests'][0]['a11'] 
+                   + data['tests'][0]['a12'] +" )\n")
+        file.write("assert( " + data['tests'][1]['a20'] + data['tests'][1]['a21'] 
+                   + data['tests'][1]['a22'] + " )\n")
+        file.write("assert( " + data['tests'][2]['a30'] + data['tests'][2]['a31'] 
+                   + data['tests'][2]['a32'] + " )\n")
+
+        file.close()
+
+        try:
+            os.chdir("data/env/env_" + str(tid))
+            x = subprocess.check_call(["python", "testit.py"])
+            self.wfile.write("All tests passed!")
+            tid = tid + 1
+        except:      
+            self.wfile.write("Error detected! One or more test cases failed!")
+            os.system("rm -rf data/env/env_" + str(tid))
+
+        os.chdir("../../..")
+
 
     def handle_contributor_tests(self, data):
         pass
