@@ -44,11 +44,13 @@
       var challenges = [];
       $scope.tests_m = false;
 
+
       $scope.test_data = [];
       $scope.prbsub = "Describe your problem for your testers. It's best to include code snippets and written overviews of relevant libraries. Everything you write here will be show to testers, so focus on providing the most important information.\n\nYou're required to submit three test cases. Every TestIt user will have to solve these three cases before they can contribute to your problem's test suite.\n\nDivide your cases in two to three components and place the portions you want testers to see in the two leftmost boxes. Aside from this restriction, the way you use the text boxes won't affect your test cases.";
       $scope.assert_10 = "5*2";
       $scope.assert_11 = "==";
       $scope.assert_12 = "9";
+      $scope.success_setup = "Initialization Code:\n\nUse this box to add code that will come before your test cases";
       var test_cases = [];
       var test_text = "";
 
@@ -471,13 +473,13 @@
 
 <!-- Modal Dialogs-->
 <div class="row text-center">
-<modal-dialog show='incomplete' dialog-title='Incomplete Submission'>
+<modal-dialog show='incomplete' dialog-title='Error with Problem'>
 {{incomplete_message}}
 </modal-dialog>
 </div>
 
 <div class="row text-center">
-<modal-dialog show='success_m' dialog-title='Submission Uploaded!' on-close="setPage('profile'); closeSuccess()">
+<modal-dialog show='success_m' dialog-title='Problem Uploaded!' on-close="setPage('profile'); closeSuccess()">
   <div class="row text-center">
     Your problem has been uploaded to our servers! 
   </div>
@@ -485,7 +487,7 @@
 </div>
 
 <div class="row text-center">
-<modal-dialog show='failure_m' dialog-title='Submission Did Not Compile'>
+<modal-dialog show='failure_m' dialog-title='Error with Submission'>
 {{success_message}}
 </modal-dialog>
 </div>
@@ -580,7 +582,7 @@
                   <br />
                   <!-- test1 starting -->
                   <div class="row formfield">
-                    <label for="sub1">Test 1:</label>
+                    <label for="sub1">Test 1: </label>
                     <textarea id="sub1" ng-model="$parent.assert_10" rows="1" cols="38" style="resize:none;">
                       test 1 here ..
                     </textarea>  
@@ -595,7 +597,7 @@
 
                   <!-- test 2 starting -->
                   <div class="row formfield">
-                    <label for="sub2">Test 2:</label>
+                    <label for="sub2">Test 2: </label>
                     <textarea id="sub2" ng-model="$parent.assert_20" rows="1" cols="38" style="resize:none;">
                       test 2 here ..
                     </textarea>  
@@ -610,7 +612,7 @@
 
                   <!-- test 3 starting -->
                   <div class="row formfield">
-                    <label for="sub3">Test 3:</label>
+                    <label for="sub3">Test 3: </label>
                     <textarea id = "sub3" ng-model="$parent.assert_30" rows="1" cols="38" style="resize:none;">
                       test 3 here ..
                     </textarea>  
@@ -670,9 +672,9 @@
                    <p> These are unfinished test cases based on the problem above. Solve all three to contribute your own tests! </p>
                   </div>
                   <br />
-                  <div class="row formfield" for="{{$parent.contrib_challenges.indexOf(t)" ng-repeat = "t in $parent.contrib_challenges">
+                  <div class="row formfield" for="{{$parent.contrib_challenges.indexOf(t)}}" ng-repeat = "t in $parent.contrib_challenges">
                     <label>Check {{$parent.contrib_challenges.indexOf(t) + 1}}: </label>
-                    <textarea ng-model="t[0]" id="{{$parent.contrib_challenges.indexOf(t)" disabled rows="1" cols="38" style="resize:none;">
+                    <textarea ng-model="t[0]" id="{{$parent.contrib_challenges.indexOf(t)}}" disabled rows="1" cols="38" style="resize:none;">
                       
                     </textarea>  
                     <textarea ng-model="t[1]" disabled rows="1" cols="10" style="resize:none;">
@@ -700,58 +702,54 @@
 
 <div class="container" ng-if="current_page == 'success'">
       <div class="row text-center">
-        <h4 for="prbsub">Contribute Your Solution</h4>
+        <h2 for="prbsub">Write Your Cases</h2>
       </div>
       <div class="row">
         <form role="form">
               <div class="form-group text-center">
                 
-                  <textarea ng-model="$parent.check_field" disabled rows="10" cols="65" style="resize:none;">
+                  <textarea ng-model="$parent.check_field" disabled rows="8" cols="100" style="resize:none;">
+                      
+                  </textarea>  
+                  <br /><br/>
+
+                  <textarea ng-model="$parent.success_setup" rows="8" cols="100" style="resize:none;">
                       
                   </textarea>  
                   <br>
                   <br>
 
-                  <textarea ng-model="$parent.success_setup" rows="10" cols="65" style="resize:none;">
-                      
-                  </textarea>  
-                  <br>
-                  <br>
-
-                  <div class="row text-center">
-                    <h4 for="prbsub">Your Custom Test Cases go here</h4>
-                  </div>
-                    <div class="row" ng-repeat = "t in $parent.contrib_tests">
-                    <label>Test {{$parent.contrib_tests.indexOf(t) + 1}}</label>
-                    <textarea ng-model="t[0]" rows="1" cols="38" style="resize:none;">
-                      thingy
-                    </textarea>  
-                    <textarea ng-model="t[1]" rows="1" cols="10" style="resize:none;">
-                      
-                    </textarea>
-                    <textarea ng-model="t[2]" rows="1" cols="38" style="resize:none;">
-                      
-                    </textarea>
-                  </div>
+                    <div class="row formfield " for="{{$parent.contrib_tests.indexOf(t)}}" ng-repeat = "t in $parent.contrib_tests">
+                      <label>Test {{$parent.contrib_tests.indexOf(t) + 1}}: </label>
+                      <textarea ng-model="t[0]" id="{{$parent.contrib_tests.indexOf(t)}}" rows="1" cols="38" style="resize:none;">
+                        thingy
+                      </textarea>  
+                      <textarea ng-model="t[1]" rows="1" cols="10" style="resize:none;">
+                        
+                      </textarea>
+                      <textarea ng-model="t[2]" rows="1" cols="38" style="resize:none;">
+                        
+                      </textarea>
+                    </div>
 
                   <!-- Add Tests button -->
                   <div class="row">
                     <div class="col-md-2 col-md-offset-3">
                       <a href="">
                           <span class="glyphicon glyphicon-plus" ng-click="addTestCase()">
-                            Add Test
+                            Add Case
                           </span>
                       </a>
                       <a href="">
                           <span class="glyphicon glyphicon-minus" ng-click="removeTestCase()">
-                            Remove Test
+                            Remove Case
                           </span>
                       </a>
                     </div>
                   </div>
                   <!-- Add Tests ending-->
-  
-               
+      
+                  <br />
                   <div class="row">
                     <button class="btn btn-success" ng-click="submitContributorTests()"> Submit </button>
                   </div>
