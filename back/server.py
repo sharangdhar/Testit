@@ -65,7 +65,7 @@ class handler (BaseHTTPRequestHandler):
                     return
                 self.handle_submission(data)
             elif data['mode'] == 'contributor_tid':
-                self.handle_contributor_tid()
+                self.handle_contributor_tid(data)
             elif data['mode'] == 'contributor_check':
                 self.handle_contributor_check(data)
             elif data['mode'] == 'contributor_tests':
@@ -169,15 +169,19 @@ class handler (BaseHTTPRequestHandler):
             while (tid_local < tid):
                 if os.path.exists("data/results/result_" + str(tid_local)):
                     file = open("data/results/result_" + str(tid_local), "r")
-                json_obj = json.loads(file.read())
-                if not json_obj[data['uid']] == None:
+                    json_obj = json.loads(file.read())
+                    file.close()
+                    if json_obj[data['uid']] == None:
+                        break
+                else:
                     break
+                tid_local = tid_local + 1
 
             if tid_local >= tid:
                 self.wfile.write("-1")
-                file.close()
                 return
 
+            print data
             if os.path.exists("data/checks/check_" + str(tid_local) + ".json"):
                 file = open("data/checks/check_" + str(tid_local) + ".json", "r")                
                 json_obj = json.loads(file.read())
@@ -252,8 +256,6 @@ class handler (BaseHTTPRequestHandler):
 
         os.chdir("../../..")
         file.close()
-
-        self.wfile.write("OK")
 
         file = open("data/results/result_" + str(tid), "a")
 
