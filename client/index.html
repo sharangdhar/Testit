@@ -204,9 +204,8 @@
 
         $http.post('', form_data).
             success(function(data, status, headers, config) {
-              console.log("\nfinished analyzing user tests\n");
               $scope.tests_m = true;
-              console.log(JSON.stringify(data));
+              console.log("\nuser test data: " + JSON.stringify(data) + "\n");
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
@@ -220,7 +219,7 @@
       var form_data = {};
       form_data.mode = "contributor_tid";
       form_data.uid = "jk94";
-      
+
       $http.post('', form_data).
             success(function(data, status, headers, config) {
               console.log("\ntid callback\n");
