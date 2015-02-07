@@ -7,6 +7,7 @@ from os import curdir, sep
 import cgi, sys, re, os, json
 
 PORT = '9001'
+tid = 0
 
 class handler (BaseHTTPRequestHandler):
 
@@ -48,14 +49,17 @@ class handler (BaseHTTPRequestHandler):
         self.end_headers()
 
         if self.headers['Content-type'] == "application/json;charset=utf-8":
-            data_string = self.rfile.read(int(self.headers['Content-Length']))
+            try:
+                data_string = self.rfile.read(int(self.headers['Content-Length']))
+            except:
+                return
             data = json.loads(data_string)
             if not data:
                 return        
             if data['mode'] == 'submission':
-                self.handle_submission(data)
+                self.handle_submission(data_string)
             elif data['mode'] == 'contribution':
-                self.handle_contribution(data)
+                self.handle_contribution(data_string)
         
         else:
             self.deal_post_data()
@@ -103,7 +107,11 @@ class handler (BaseHTTPRequestHandler):
 
     def handle_submission(self, data):
         print "SUBMISSION!!"
-        print data
+        global tid
+        file = open("data/tests/test_" + str(tid) + ".json", 'w')
+        file.write(data)
+        file.close()
+        tid = tid + 1
         pass
 
     def handle_contribution(data):
@@ -124,6 +132,6 @@ try:
     server.serve_forever()
 
 except KeyboardInterrupt:
-    print 'Exiting...\nThank you for using TestIt server!. We sincerely hope you have a pleasant day :)!\n'
+    print 'Exiting...\nThank you for using TestIt server! We sincerely hope you have a pleasant day :)!\n'
     server.socket.close()
     exit(0)
