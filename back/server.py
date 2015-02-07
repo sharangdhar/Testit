@@ -57,13 +57,15 @@ class handler (BaseHTTPRequestHandler):
                 return        
             if data['mode'] == 'submission':
                 global tid
-                #try: 
-                check = open("data/checks/check_" + str(tid) + ".json", "w")
-                check.write(data_string)
-                check.close()
-                #except:
-                 #   return
+                try: 
+                    check = open("data/checks/check_" + str(tid) + ".json", "w")
+                    check.write(data_string)
+                    check.close()
+                except:
+                    return
                 self.handle_submission(data)
+            elif data['mode'] == 'contributor_tid':
+                self.handle_contributor_tid()
             elif data['mode'] == 'contributor_check':
                 self.handle_contributor_check(data)
             elif data['mode'] == 'contributor_tests':
@@ -150,26 +152,53 @@ class handler (BaseHTTPRequestHandler):
             os.chdir("data/env/env_" + str(tid))
             x = subprocess.check_call(["python", "testit.py"])
             self.wfile.write("All tests passed!")
+            tid = tid + 1
         except:      
             self.wfile.write("Error detected! One or more test cases failed!")
             os.system("rm -rf data/env/env_" + str(tid))
 
         os.chdir("../../..")
-        tid = tid + 1
 
-    def handle_contributor_check(data):
-        print "CONTRIBUTION!!"
-
+    def handle_contributor_tid(self):
+        print "GETTING TID!!"
         global tid
-        tid_local = random.randint(0, tid)
+        if (tid == 0):
+            self.wfile.write("-1")
+        else: 
+            tid = random.randint(0, tid-1)
+            if os.path.exists("data/checks/check_" + str(tid) + ".json"):
+                file = open("data/checks/check_" + str(tid) + ".json", "r")
+                data = json.loads(file.read())
+                data['problem_id'] = str(tid)
+                self.wfile.write(json.dumps(data))
+            else:
+                print "AHH"
+                self.wfile.write("-1")
+                return
 
-        # Need to add files to display page
 
-        if not os.path.exists("data/env/env_" + str(tid_local) + "/testit.py"):
+    def handle_contributor_check(self, data):
+        print "CONTRIBUTION!!"
+        global tid
+
+        try:
+            env = zipfile.ZipFile("data/env/env_" + str(tid) + ".zip", "r")
+            if not os.path.exists("data/env/env_" + str(tid)):
+                os.mkdir("data/env/env_" + str(tid))
+            else:
+                os.system("rm -rf data/env/env_" + str(tid))
+                os.mkdir("data/env/env_" + str(tid))
+            env.extractall("data/env/env_" + str(tid) + "/")
+            os.remove("data/env/env_" + str(tid) + ".zip")
+        except:
+            self.wfile.write("File submitted was not a zip file!")
+            return
+
+        if not os.path.exists("data/env/env_" + str(tid) + "/testit.py"):
             self.wfile.write("testit.py not found in submitted environment zip file!")
             return
 
-        file = open("data/env/env_" + str(tid_local) + "/testit.py", "a")
+        file = open("data/env/env_" + str(tid) + "/testit.py", "a")
         file.write("\n\n")
 
         file.write("assert( " + data['tests'][0]['a10'] + data['tests'][0]['a11'] 
@@ -180,13 +209,17 @@ class handler (BaseHTTPRequestHandler):
                    + data['tests'][2]['a32'] + " )\n")
         file.close()
 
-        try:            
-            os.chdir("data/env/env_" + str(tid_local))
+        try:
+            os.chdir("data/env/env_" + str(tid))
             x = subprocess.check_call(["python", "testit.py"])
-            os.chdir("../../..")
             self.wfile.write("All tests passed!")
+            tid = tid + 1
         except:      
             self.wfile.write("Error detected! One or more test cases failed!")
+            os.system("rm -rf data/env/env_" + str(tid))
+
+        os.chdir("../../..")
+
 
     def handle_contributor_tests(self, data):
         print "Success"
