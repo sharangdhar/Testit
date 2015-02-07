@@ -58,6 +58,7 @@ class handler (BaseHTTPRequestHandler):
                 self.wfile.write("Thanks %s !" % form["your_name"].value)
             return
 
+    # From https://gist.github.com/UniIsland/3346170
     def deal_post_data(self):
         boundary = self.headers.plisttext.split("=")[1]
         remainbytes = int(self.headers['content-length'])
@@ -77,7 +78,7 @@ class handler (BaseHTTPRequestHandler):
         line = self.rfile.readline()
         remainbytes -= len(line)
         try:
-            out = open(fn, 'wb')
+            out = open("data/" + fn, 'wb')
         except IOError:
             return (False, "Can't create file to write, do you have permission to write?")
                 
@@ -97,6 +98,7 @@ class handler (BaseHTTPRequestHandler):
                 out.write(preline)
                 preline = line
         return (False, "Unexpect Ends of data.")
+
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
