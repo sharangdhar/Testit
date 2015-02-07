@@ -4,9 +4,10 @@ import BaseHTTPServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 from os import curdir, sep
-import cgi, sys, re, os, json
+import cgi, sys, re, os, json, zipfile
 
 PORT = '9001'
+tid = 0
 
 class handler (BaseHTTPRequestHandler):
 
@@ -44,28 +45,26 @@ class handler (BaseHTTPRequestHandler):
             self.send_error(404,'File Not Found: %s' % self.path)
 
     def do_POST(self):
-        '''
-        form = cgi.FieldStorage(
-            fp=self.rfile, 
-            headers=self.headers,
-            environ={'REQUEST_METHOD':'POST',
-                     'CONTENT_TYPE':self.headers['Content-Type'],
-                 })
+        self.send_response(200)
+        self.end_headers()
+
+        if self.headers['Content-type'] == "application/json;charset=utf-8":
+            try:
+                data_string = self.rfile.read(int(self.headers['Content-Length']))
+            except:
+                return
+            data = json.loads(data_string)
+            if not data:
+                return        
+            if data['mode'] == 'submission':
+                self.handle_submission(data)
+            elif data['mode'] == 'contribution':
+                self.handle_contribution(data)
         
-        print "Your name is: %s" % form["your_name"].value
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write("Thanks %s !" % form["your_name"].value)
-        '''
-        data_string = self.rfile.read(int(self.headers['Content-Length']))
-        self.send_response(200)
-        self.end_headers()
+        else:
+            self.deal_post_data()
 
-        data = json.loads(data_string)
-        print data
-        return
-
-    # Modified from https://gist.github.com/UniIsland/3346170
+    # From https://gist.github.com/UniIsland/3346170
     def deal_post_data(self):
         boundary = self.headers.plisttext.split("=")[1]
         remainbytes = int(self.headers['content-length'])
@@ -85,7 +84,7 @@ class handler (BaseHTTPRequestHandler):
         line = self.rfile.readline()
         remainbytes -= len(line)
         try:
-            out = open("data/" + fn, 'wb')
+            out = open("data/env/env_" + str(tid) + ".zip", 'wb')
         except IOError:
             return (False, "Can't create file to write, do you have permission to write?")
 
@@ -106,6 +105,44 @@ class handler (BaseHTTPRequestHandler):
                 preline = line
         return (False, "Unexpect Ends of data.")
 
+    def handle_submission(self, data):
+        print "SUBMISSION!!"
+        global tid
+
+        try:
+            env = zipfile.ZipFile("data/env/env_" + str(tid) + ".zip", "r")
+            if not os.path.exists("data/env/env_" + str(tid)):
+                os.mkdir("data/env/env_" + str(tid))
+            env.extractall("data/env/env_" + str(tid) + "/")
+            os.remove("data/env/env_" + str(tid) + ".zip")
+        except:
+            print "Not a zip file!"
+            return
+
+        if not os.path.exists("data/env/env_" + str(tid) + "/testit.py"):
+            print "testit.py not found!"
+            return
+
+        file = open("data/env/env_" + str(tid) + "/testit.py", "a")
+        file.write("\n\n")
+
+        file.write("assert( " + data['tests'][0]['a10'] + data['tests'][0]['a11'] 
+                   + data['tests'][0]['a12'] +" )\n")
+        file.write("assert( " + data['tests'][1]['a20'] + data['tests'][1]['a21'] 
+                   + data['tests'][1]['a22'] + " )\n")
+        file.write("assert( " + data['tests'][2]['a30'] + data['tests'][2]['a31'] 
+                   + data['tests'][2]['a32'] + " )\n")
+
+        self.wfile.write("All tests passed!")
+
+        tid = tid + 1
+        pass
+
+    def handle_contribution(data):
+        print "CONTRIBUTION!!"
+        print data
+        pass
+
     def log_message(self, format, *args):
         log = open(".log", 'a')
         log.write("%s - - [%s] %s\n" % (self.address_string(), self.log_date_time_string(), format % args)) 
@@ -119,6 +156,6 @@ try:
     server.serve_forever()
 
 except KeyboardInterrupt:
-    print 'Exiting...\nThank you for using TestIt server!. We sincerely hope you have a pleasant day :)!\n'
+    print 'Exiting...\nThank you for using TestIt server! We sincerely hope you have a pleasant day :)!\n'
     server.socket.close()
     exit(0)
