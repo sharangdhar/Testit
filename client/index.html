@@ -182,16 +182,14 @@
         var form_data = {};
         form_data.mode = "contributor_tests";
 
-        form_data.tests = [];
-        for (var i=0; i< $scope.contrib_tests; i++){
-          form_data.tests.push($scope.contrib_tests[i]);
-        }
+        console.log("\n\nContrib tests :" + $scope.contrib_tests);
+        form_data.tests = $scope.contrib_tests;
+        console.log("\ndata tests: " + form_data.tests);
 
         form_data.setup = ($scope.success_setup == null) ? "" : $scope.success_setup.trim();
         form_data.problem_id = $scope.problem_id;
         console.log("problem_id: " + $scope.problem_id);
 
-        console.log('sending post');
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               console.log("\nfinished analyzing user tests\n");

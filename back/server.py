@@ -229,12 +229,15 @@ class handler (BaseHTTPRequestHandler):
         
         all_tests = data['tests']
         user_setup = data['setup']
+        arr = []
 
-        for i in len(all_tests):
+        print all_tests
+        for i in range(len(all_tests)):
             file = open("data/env/env_" + str(tid) + "/testit.py", "a")
             file.write("\n\n")
             file.write(user_setup)
-            file.write("assert("+all_tests[i,0]+all_tests[i,1]+all_tests[i,2]+" )\n")     
+            print all_tests
+            file.write("assert("+all_tests[i][0]+all_tests[i][1]+all_tests[i][2]+" )\n")     
             try:
                 os.chdir("data/env/env_" + str(tid))
                 x=subprocess.check_call(["python", "testit.py"])
@@ -247,7 +250,8 @@ class handler (BaseHTTPRequestHandler):
 
         file = open("data/results/result_" + str(tid), "a")
         file.write("\n\n\n")
-        file.write(arr)
+        file.write(str(arr))
+        file.close()
 
 
     def log_message(self, format, *args):
