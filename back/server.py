@@ -4,7 +4,7 @@ import BaseHTTPServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 from os import curdir, sep
-import cgi, sys, re, os, json, zipfile, subprocess
+import cgi, sys, re, os, json, zipfile, subprocess, random
 
 PORT = '9001'
 tid = 0
@@ -56,12 +56,20 @@ class handler (BaseHTTPRequestHandler):
             if not data:
                 return        
             if data['mode'] == 'submission':
+                global tid
+                try: 
+                    check = open("data/checks/check_" + str(tid) + ".json")
+                    check.write(data_string)
+                except:
+                    return
                 self.handle_submission(data)
-            elif data['mode'] == 'contribution':
-                self.handle_contribution(data)
-        
+            elif data['mode'] == 'contributor_check':
+                self.handle_contributor_check(data)
+            elif data['mode'] == 'contributor_tests':
+                self.handle_contributer_tests(data)
         else:
             self.deal_post_data()
+
 
     # From https://gist.github.com/UniIsland/3346170
     def deal_post_data(self):
@@ -112,6 +120,8 @@ class handler (BaseHTTPRequestHandler):
             env = zipfile.ZipFile("data/env/env_" + str(tid) + ".zip", "r")
             if not os.path.exists("data/env/env_" + str(tid)):
                 os.mkdir("data/env/env_" + str(tid))
+            else:
+                os.system("rm -rf data/env/env_" + str(tid))
             env.extractall("data/env/env_" + str(tid) + "/")
             os.remove("data/env/env_" + str(tid) + ".zip")
         except:
@@ -144,9 +154,40 @@ class handler (BaseHTTPRequestHandler):
 
         tid = tid + 1
 
-    def handle_contribution(data):
+    def handle_contributor_check(data):
         print "CONTRIBUTION!!"
-        print data
+
+        global tid
+        tid_local = random.randint(0, tid)
+
+        # Need to add files to display page
+
+        if not os.path.exists("data/env/env_" + str(tid_local) + "/testit.py"):
+            self.wfile.write("testit.py not found in submitted environment zip file!")
+            return
+
+        file = open("data/env/env_" + str(tid_local) + "/testit.py", "a")
+        file.write("\n\n")
+
+        file.write("assert( " + data['tests'][0]['a10'] + data['tests'][0]['a11'] 
+                   + data['tests'][0]['a12'] +" )\n")
+        file.write("assert( " + data['tests'][1]['a20'] + data['tests'][1]['a21'] 
+                   + data['tests'][1]['a22'] + " )\n")
+        file.write("assert( " + data['tests'][2]['a30'] + data['tests'][2]['a31'] 
+                   + data['tests'][2]['a32'] + " )\n")
+
+        file.close()
+
+        try:            
+            os.chdir("data/env/env_" + str(tid_local))
+            x = subprocess.check_call(["python", "testit.py"])
+            os.chdir("../../..")
+            self.wfile.write("All tests passed!")
+        except:      
+            self.wfile.write("Error detected! One or more test cases failed!")
+
+    def handle_contributor_tests(self, data):
+        pass
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
@@ -162,5 +203,6 @@ try:
 
 except KeyboardInterrupt:
     print 'Exiting...\nThank you for using TestIt server! We sincerely hope you have a pleasant day :)!\n'
+    os.system("rm -rf data/env/* data/checks/*")
     server.socket.close()
     exit(0)
