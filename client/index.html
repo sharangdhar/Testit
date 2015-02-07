@@ -39,6 +39,7 @@
       $scope.sorry_m = false;
       $scope.problem_id = "";
       var challenges = [];
+      $scope.tests_m = false;
 
       var test_cases = [];
       var test_text = "";
@@ -141,99 +142,18 @@
               console.log("oh noes");
             });
         return null;
-      };
 
-      $scope.checkChallenges = function(){
-
-        if(!$scope.validChallenges()){
-          $scope.incomplete = true;
-          $scope.incomplete_message = "One or more required fields was not filled out.";
-          return null;
-        }
-
-        var form_data = {};
-        form_data.mode = "contributor_check";
-
-        form_data.tests = [];
-        for (var i=0; i< $scope.contrib_challenges; i++){
-          form_data.tests.push($scope.contrib_challenges[i]);
-        }
 
         console.log('sending post');
         $http.post('', form_data).
             success(function(data, status, headers, config) {
-              // this callback will be called asynchronously
-              // when the response is available
-              $scope.uploader.clearQueue();
-              console.log("data :" + data);
-              console.log("status: " + status);
-              console.log("headers: " + headers);
-              console.log("config: " + config);
-              if (data == "All tests passed!"){
-                $scope.challenges_m= true;
-              } else {
-                $scope.success_f = true;
-                $scope.success_message = data + "   ";
-              }
+              $scope.success_m = true;
+
             }).
             error(function(data, status, headers, config) {
-              $scope.uploader.clearQueue();
               // called asynchronously if an error occurs
               // or server returns response with an error status.
-            });
-        return null;
-      };
-
-      $scope.submitContributorTests = function(){
-        
-        var form_data = {};
-        form_data.mode = "contributor_tests";
-
-        form_data.tests = [];
-        for (var i=0; i< $scope.contrib_tests; i++){
-          form_data.tests.push($scope.contrib_tests[i]);
-        }
-
-        form_data.setup = $scope.success_setup.trim();
-        form_data.problem_id = $scope.problem_id;
-        console.log("problem_id: " + problem_id);
-
-        console.log('sending post');
-        $http.post('', form_data).
-            success(function(data, status, headers, config) {
-              // this callback will be called asynchronously
-              // when the response is available
-              $scope.uploader.clearQueue();
-              console.log("data :" + data);
-              console.log("status: " + status);
-              console.log("headers: " + headers);
-              console.log("config: " + config);
-              if (data == "All tests passed!"){
-                $scope.challenges_m= true;
-              } else {
-                $scope.success_f = true;
-                $scope.success_message = data + "   ";
-              }
-            }).
-            error(function(data, status, headers, config) {
-              $scope.uploader.clearQueue();
-              // called asynchronously if an error occurs
-              // or server returns response with an error status.
-            });
-        return null;
-      };
-
-      $scope.getProblem = function(){
-      
-      var form_data = {};
-      form_data.mode = "contributor_tid";
-
-      $http.post('', form_data).
-            success(function(data, status, headers, config) {
-              console.log("\ntid callback\n");
-              console.log("data :" + JSON.stringify(data));
-              console.log("status: " + status);
-              console.log("headers: " + headers);
+            });;///
               console.log("config: " + config);
               if (data == "-1"){
                 $scope.sorry_m = true;
@@ -462,7 +382,7 @@
   <button class="btn btn-success" ng-click="setPage('success')"> Continue </button>
 </modal-dialog>
 
-<modal-dialog show='false' dialog-title='Your Tests Compiled!'>
+<modal-dialog show='tests_m' dialog-title='Submitted Tests!'>
   <button class="btn btn-success" ng-click="setPage('profile')"> Continue </button>
 </modal-dialog>
 
@@ -710,7 +630,7 @@
   
                
                   <div class="row">
-                    <button class="btn btn-success" ng-click="submitContributor()"> Submit </button>
+                    <button class="btn btn-success" ng-click="submitContributorTests()"> Submit </button>
                   </div>
               </div>
         </form>
