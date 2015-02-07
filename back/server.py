@@ -257,8 +257,6 @@ class handler (BaseHTTPRequestHandler):
         os.chdir("../../..")
         file.close()
 
-        self.wfile.write("OK")
-
         file = open("data/results/result_" + str(tid), "a")
 
         json_obj = json.loads(file.read())
