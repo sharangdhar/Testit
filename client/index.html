@@ -8,6 +8,7 @@
  
   
   <link href="css/bootstrap.min.css" rel="stylesheet"></link>
+  <link href="css/form-signin.css" rel="stylesheet"></link>
   <script src="js/jquery-1.9.1.js" type='text/javascript'></script>
   <script src="js/jquery-ui-1.10.3.custom.min.js" type='text/javascript'></script> 
   <script src="js/jquery-1.11.2.min.js" type='text/javascript'></script>
@@ -310,14 +311,31 @@
 
 
 <!-- Login Page starts -->
-<div class="container text-center" ng-if="current_page == 'landing'">
-  <br><br><br><br><br><br><br><br><br><br>
-  <div class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true"></div>
- <!-- <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-  </fb:login-button> -->
 
-</div>
-  <!-- Login Page ends -->
+
+<div class="container" ng-if="current_page == 'landing'">
+    <div class="row">
+        <div class="col-sm-6 col-md-4 col-md-offset-4">
+            <br>
+            <h1 class="text-center login-title">Sign in to continue to testit</h1>
+            <br>
+            <div class="account-wall"><br>
+                <img class="profile-img" src="images/user_icon.png"
+                    alt="">
+                    <br><br><br><br>
+                    <div class="row">
+                      <div align="center">
+                        <div align="center" class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true">
+                        </div>
+                      </div>
+                    </div>
+             </div>
+         </div>
+     </div>
+ </div>
+
+<!-- Login Page ends -->
+
 
 
 <!-- Modal Dialogs-->
