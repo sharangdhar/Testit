@@ -76,15 +76,15 @@
 
       $scope.uploadFiles = function(){
         
-        if ($scope.uploader.queue.length == 0){
-          return null;
-        }
-
+        
+        $scope.uploader.uploadAll();
+        $scope.uploader.clearQueue();
+        /*
         for (var i = 0; i< $scope.uploader.queue.length; i++){
           $scope.uploader.queue[i].upload();
-        }
+        } */
 
-        $scope.uploader.clearQueue();
+        
         var form_data = {};
         form_data.mode = "submission";
 
