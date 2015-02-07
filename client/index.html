@@ -43,7 +43,8 @@
       var challenges = [];
       $scope.tests_m = false;
 
-      $scope.table_demo = [{name: "JSON", coolness:"Passed"},{name:"SML",coolness:"Failed"},{name:"Python",coolness:"Failed"}];
+      $scope.test_data = [];
+      $scope.table_demo = [{func: "JSON", result:"Passed"},{func:"SML",result:"Failed"},{func:"Python",result:"Failed"}];
       var test_cases = [];
       var test_text = "";
 
@@ -205,7 +206,16 @@
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               $scope.tests_m = true;
-              console.log("\nuser's test data: " + JSON.stringify(data) + "\n");
+              var parsed_data = JSON.parse(data);
+              $scope.test_data = [];
+              console.log("\nuser's test data: " + JSON.parse(data) + "\n");
+              var items = parsed_data.Items;
+              for (var i = 0; i < items.length; ++i) {
+                  console.log("Item #" + i);
+                  for (var name in items[i]) {
+                      console.log(name + "=" + items[i][name]);
+                  }
+              }
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
@@ -670,7 +680,14 @@
       <div class="row">
         <form role="form">
               <div class="form-group text-center">
-                  <textarea ng-model="$parent.success_setup" rows="10" cols="105" style="resize:none;">
+                
+                  <textarea ng-model="$parent.check_field" disabled rows="10" cols="65" style="resize:none;">
+                      
+                  </textarea>  
+                  <br>
+                  <br>
+
+                  <textarea ng-model="$parent.success_setup" rows="10" cols="65" style="resize:none;">
                       
                   </textarea>  
                   <br>
@@ -786,13 +803,11 @@
           </thead>
           <tbody>
           <tr ng-repeat="row in table_demo">
-            <td>{{row.name}}</td>
-            <td>{{row.coolness}}</td>
+            <td>{{row.func}}</td>
+            <td>{{row.result}}</td>
           </tr>
           </tbody>
         </table>
-
-
 
       </div>
 
