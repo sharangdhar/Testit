@@ -35,7 +35,7 @@
       $scope.success_m= false;
       $scope.success_f = false;
       $scope.success_message= "";
-      $scope.display_challenges_modal = false;
+      $scope.challenges_m = false;
 
       var test_cases = [];
       var test_text = "";
@@ -122,12 +122,19 @@
               }
             }).
             error(function(data, status, headers, config) {
+              $scope.uploader.clearQueue();
               console.log("oh noes");
             });
         return null;
       };
 
       $scope.checkChallenges = function(){
+
+        if(!$scope.validChallenges()){
+          $scope.incomplete = true;
+          $scope.incomplete_message = "One or more required fields was not filled out.";
+          return null;
+        }
 
         var form_data = {};
         form_data.mode = "contributor_check";
@@ -142,8 +149,20 @@
             success(function(data, status, headers, config) {
               // this callback will be called asynchronously
               // when the response is available
+              $scope.uploader.clearQueue();
+              console.log("data :" + data);
+              console.log("status: " + status);
+              console.log("headers: " + headers);
+              console.log("config: " + config);
+              if (data == "All tests passed!"){
+                $scope.challenges_m= true;
+              } else {
+                $scope.success_f = true;
+                $scope.success_message = data + "   ";
+              }
             }).
             error(function(data, status, headers, config) {
+              $scope.uploader.clearQueue();
               // called asynchronously if an error occurs
               // or server returns response with an error status.
             });
@@ -189,6 +208,7 @@
       $scope.removeTestCase = function(){
         $scope.contrib_tests.pop();
       }
+
     }
 
     demoApp.controller('MainController',MainController);
@@ -371,15 +391,15 @@
 </modal-dialog>
 
 <modal-dialog show='success_f' dialog-title='Your Submission Did Not Compile'>
-{{success_message}} <br /> <button class="btn btn-primary" ng-click=""> Continue </button>
+{{success_message}}
 </modal-dialog>
 
-<modal-dialog show='display_challenges_modal' dialog-title='Your Passed the Challenges!'>
-  <button class="btn btn-success" ng-click=""> Continue </button>
+<modal-dialog show='challenges_m' dialog-title='Your Passed the Challenges!'>
+  <button class="btn btn-success" ng-click="setPage('success')"> Continue </button>
 </modal-dialog>
 
 <modal-dialog show='false' dialog-title='Your Tests Compiled!'>
-  <button class="btn btn-success" ng-click=""> Continue </button>
+  <button class="btn btn-success" ng-click="setPage('profile')"> Continue </button>
 </modal-dialog>
 
 
@@ -509,7 +529,7 @@
                     <li ng-repeat="item in uploader.queue">
                         Name: <span ng-bind="item.file.name"></span><br/>
                     </li>
-                  </div> <br/ > <br />
+                  </div> 
 
                   <div class="row">
                     <button class="btn btn-success" ng-click="uploadFiles()"> Upload </button>
