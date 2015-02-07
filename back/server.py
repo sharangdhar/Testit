@@ -228,7 +228,7 @@ class handler (BaseHTTPRequestHandler):
         
         all_tests = data['tests']
         user_setup = data['setup']
-        arr = {}
+        arr = []
         i=0
 
         file = open("data/env/env_" + str(tid) + "/testit.py", "a")
@@ -244,9 +244,9 @@ class handler (BaseHTTPRequestHandler):
 
             try:
                 x=subprocess.check_call(["python", "testit.py"])
-                arr[(test[0]+test[1]+test[2]).encode('utf-8')] = "Passed"
+                arr = arr + [((test[0]+test[1]+test[2]).encode('utf-8'), "Passed")]
             except:
-                arr[(test[0]+test[1]+test[2]).encode('utf-8')] = "Failed"
+                arr = arr + [((test[0]+test[1]+test[2]).encode('utf-8'), "Failed")]
             i=i+1
             file = open("testit.py", "a")
             file.seek(pos, os.SEEK_SET)
@@ -262,7 +262,7 @@ class handler (BaseHTTPRequestHandler):
         else:
             json_obj = {}
 
-        json_obj[data['uid']] = str(arr)
+        json_obj[data['uid']] = arr
 
         file = open("data/results/result_" + str(tid), "wb")
         file.write(json.dumps(json_obj))
