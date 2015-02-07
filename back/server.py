@@ -5,6 +5,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 
 from os import curdir, sep
 import cgi, sys, re, os, json, zipfile, subprocess, random
+import accounts
 
 PORT = '9001'
 tid = 0
@@ -54,7 +55,11 @@ class handler (BaseHTTPRequestHandler):
             data_string = self.rfile.read(int(self.headers['Content-length']))
             data = json.loads(data_string)
             if not data:
-                return        
+                return
+            if data['mode'] == 'login':
+                self.handle_login(data)
+            if data['mode'] == 'profile':
+                self.handle_profile(data)
             if data['mode'] == 'submission':
                 global tid
                 try: 
@@ -154,7 +159,7 @@ class handler (BaseHTTPRequestHandler):
             self.wfile.write("All tests passed!")
             tid = tid + 1
         except:      
-            self.wfile.write("Error detected! One or more test cases failed!")
+            self.wfile.write("One or more test cases failed!")
             os.system("rm -rf data/env/env_" + str(tid))
 
         os.chdir("../../..")
@@ -213,7 +218,7 @@ class handler (BaseHTTPRequestHandler):
             x=subprocess.check_call(["python", "testit.py"])
             self.wfile.write("All tests passed!")
         except:
-            self.wfile.write("Error detected! One or more test cases failed!")
+            self.wfile.write("One or more test cases failed!")
 
         file = open("testit.py", "a")
         file.seek(pos, os.SEEK_SET)
@@ -228,7 +233,7 @@ class handler (BaseHTTPRequestHandler):
         
         all_tests = data['tests']
         user_setup = data['setup']
-        arr = {}
+        arr = []
         i=0
 
         file = open("data/env/env_" + str(tid) + "/testit.py", "a")
@@ -244,9 +249,9 @@ class handler (BaseHTTPRequestHandler):
 
             try:
                 x=subprocess.check_call(["python", "testit.py"])
-                arr[(test[0]+test[1]+test[2]).encode('utf-8')] = "Passed"
+                arr = arr + [((test[0]+test[1]+test[2]).encode('utf-8'), "Passed")]
             except:
-                arr[(test[0]+test[1]+test[2]).encode('utf-8')] = "Failed"
+                arr = arr + [((test[0]+test[1]+test[2]).encode('utf-8'), "Failed")]
             i=i+1
             file = open("testit.py", "a")
             file.seek(pos, os.SEEK_SET)
@@ -262,13 +267,26 @@ class handler (BaseHTTPRequestHandler):
         else:
             json_obj = {}
 
-        json_obj[data['uid']] = str(arr)
+        json_obj[data['uid']] = arr
 
         file = open("data/results/result_" + str(tid), "wb")
         file.write(json.dumps(json_obj))
         self.wfile.write(json.dumps(json_obj[data['uid']]))
 
+        addProb(data['uid'], str(tid), len(all_tests))
+
         file.close()
+
+    def handle_login(self, data):
+        print data['uid']
+        if getUser(data['uid']) == None:
+            addUser(data['uid'])
+        else:
+            return
+
+    def handle_profile(self, data):
+        print data['uid']
+        self.wfile.write(json.dumps(getUsr(data['uid'])))
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
