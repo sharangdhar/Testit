@@ -66,7 +66,7 @@
       $scope.validChallenges = function(){
 
         for (var i=0; i< $scope.contrib_challenges.length; i++){
-          if ($scope.contrib_challenges[i].trim()==""){
+          if ($scope.contrib_challenges[i][3].trim()==""){
             return false;
           }
         }
@@ -219,7 +219,8 @@
       
       var form_data = {};
       form_data.mode = "contributor_tid";
-
+      form_data.uid = "jk94";
+      
       $http.post('', form_data).
             success(function(data, status, headers, config) {
               console.log("\ntid callback\n");
