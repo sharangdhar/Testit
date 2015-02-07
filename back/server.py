@@ -246,6 +246,7 @@ class handler (BaseHTTPRequestHandler):
             os.chdir("../../..")
 
         self.wfile.write(arr)
+        self.wfile.write("")
 
 
     def log_message(self, format, *args):
