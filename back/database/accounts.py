@@ -62,7 +62,7 @@ def getProbHist(userid):
     return data
 
 # put together html contents
-def getHTML(userid):
+def getjson(userid):
   profileinfo = getUser(userid)
   name = (profileinfo[0])[1]
   info = (profileinfo[0])[2]
@@ -72,11 +72,18 @@ def getHTML(userid):
   subsol = ''
   probid = ''
   timestamp = ''
-  if len(probinfo) > 0:
-    subsol = (probinfo[0])[1]
-    probid = (probinfo[0])[2]
-    timestamp = (probinfo[0])[3]
-  ret = '''<div class = "container">
+  ret = '[';
+  first =True;
+  for row in probinfo:
+    subsol = (row)[1]
+    probid = (row)[2]
+    timestamp = (row)[3]
+    ret = ', {subsol: '+subsol+', time: '+time+'}'
+    if first:
+      ret = ret[2:]
+      first = false
+  ret = ret+']'
+  '''  ret = <div class = "container">
              <div class = "raw">
                <img src = '+imgpath+'>
                <H3 class = "col-md-3 col-md-offset-3">'+name+'</H3>
@@ -96,5 +103,6 @@ def getHTML(userid):
                  </tr>
                </table>
              </div>
-           </div>'''
+           </div>
+  '''
   return ret
