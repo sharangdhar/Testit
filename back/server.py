@@ -180,10 +180,7 @@ class handler (BaseHTTPRequestHandler):
     def handle_contributor_check(self, data):
         print "CONTRIBUTION!!"
         
-        file.write("\n\n")
-
         tid = data['problem_id']
-        # Need to add files to display pag
 
         all_tests = data['tests']
         
@@ -206,7 +203,6 @@ class handler (BaseHTTPRequestHandler):
         print "Success"
         
         tid = data['problem_id']
-        # Need to add files to display page
         
         all_tests = data['tests']
         user_setup = data['setup']
