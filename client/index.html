@@ -35,6 +35,7 @@
       $scope.success_f = false;
       $scope.success_message= "";
       $scope.challenges_m = false;
+      $scope.challenges_message = false;
 
       $scope.sorry_m = false;
       $scope.problem_id = "";
@@ -61,6 +62,7 @@
       };
 
       $scope.validChallenges = function(){
+
         for (var i=0; i< $scope.contrib_challenges.length; i++){
           if ($scope.contrib_challenges[i].trim()==""){
             return false;
@@ -145,12 +147,12 @@
       };
 
       $scope.checkChallenges = function(){
-
+        /*
         if(!$scope.validChallenges()){
           $scope.incomplete = true;
           $scope.incomplete_message = "One or more required fields was not filled out.";
           return null;
-        }
+        } */
 
         var form_data = {};
         form_data.mode = "contributor_check";
@@ -165,10 +167,17 @@
             success(function(data, status, headers, config) {
               // this callback will be called asynchronously
               // when the response is available
-              console.log("data :" + data);
+             console.log("data :" + data);
               console.log("status: " + status);
               console.log("headers: " + headers);
               console.log("config: " + config);
+              if (data == "All tests passed!"){
+                $scope.challenges_m= true;
+
+              } else {
+                $scope.success_f = true;
+                $scope.success_message = data + "   ";
+              }
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
@@ -254,6 +263,10 @@
       $scope.closeSorry = function(){
         $scope.sorry_m = false;
       };
+
+      $scope.closeChallenges = function(){
+        $scope.challenges_m = false;
+      }
     }
 
     demoApp.controller('MainController',MainController);
@@ -438,7 +451,7 @@
 </modal-dialog>
 
 <modal-dialog show='challenges_m' dialog-title='Your Passed the Challenges!'>
-  <button class="btn btn-success" ng-click="setPage('success')"> Continue </button>
+  <button class="btn btn-success" ng-click="setPage('success'); closeChallenges()"> Continue </button>
 </modal-dialog>
 
 <modal-dialog show='tests_m' dialog-title='Your Tests Compiled!'>
@@ -628,7 +641,7 @@
                 
                
                   <div class="row">
-                    <button class="btn btn-success" ng-click="setPage('success')"> Submit </button>
+                    <button class="btn btn-success" ng-click="checkChallenges()"> Submit </button>
                   </div>
               </div>
         </form>
