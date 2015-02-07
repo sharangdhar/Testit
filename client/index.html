@@ -176,7 +176,7 @@
         return null;
       };
 
-      $scope.submitContributor = function(){
+      $scope.submitContributorTests = function(){
         
         if ($scope.uploader.queue.length == 0){
           return null;
@@ -193,18 +193,26 @@
           form_data.tests.push($scope.contrib_tests[i]);
         }
 
-        form_data.ps = $scope.success_setup.trim();
+        form_data.setup = $scope.success_setup.trim();
 
       };
 
       $scope.getProblem = function(){
-        
-        $http.post('contributor_tid', {}).
+      
+      var form_data = {};
+      form_data.mode = "contributor_tid";
+
+      $http.post('', form_data).
             success(function(data, status, headers, config) {
-              var problem_id = data;
-              console.log("tid data: " + data);
-              if (problem_id == "-1"){
+              console.log("\ntid callback\n");
+              console.log("data :" + data);
+              console.log("status: " + status);
+              console.log("headers: " + headers);
+              console.log("config: " + config);
+              if (data == "-1"){
                 $scope.sorry_m = true;
+              } else {
+                
               }
             }).
             error(function(data, status, headers, config) {
@@ -421,7 +429,9 @@
 </modal-dialog>
 
 <modal-dialog show='sorry_m' dialog-title='No Problems Found'>
- Sorry :( No problem to solve at this time.  <button class="btn btn-success" ng-click="setPage('profile'); closeSorry()"> Continue </button>
+ Sorry :( no problems to solve at this time.  
+ <br />
+ <button class="btn btn-success" ng-click="setPage('profile'); closeSorry()"> Continue </button>
 </modal-dialog>
 
 
