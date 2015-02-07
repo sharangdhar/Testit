@@ -32,7 +32,7 @@
       $scope.incomplete = false;
       $scope.incomplete_message= "";
       $scope.success_m= false;
-      $scope.success_f = false;
+      $scope.failure_m = false;
       $scope.success_message= "";
       $scope.challenges_m = false;
       $scope.challenges_message = false;
@@ -135,7 +135,7 @@
 
                 $scope.prbsub = "";
               } else {
-                $scope.success_f = true;
+                $scope.failure_m = true;
                 $scope.success_message = data + "   ";
               }
             }).
@@ -178,7 +178,7 @@
               if (data == "All tests passed!"){
                 $scope.challenges_m = true;
               } else {
-                $scope.success_f = true;
+                $scope.failure_m = true;
                 $scope.success_message = data + "   ";
               }
             }).
@@ -205,7 +205,7 @@
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               console.log("\nfinished analyzing user tests\n");
-              tests_m = true;
+              $scope.tests_m = true;
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
@@ -453,7 +453,7 @@
   <button class="btn btn-success" ng-click="setPage('profile'); closeSuccess()"> Continue </button>
 </modal-dialog>
 
-<modal-dialog show='success_f' dialog-title='Your Submission Did Not Compile'>
+<modal-dialog show='failure_m' dialog-title='Your Submission Did Not Compile'>
 {{success_message}}
 </modal-dialog>
 
