@@ -58,7 +58,7 @@ class handler (BaseHTTPRequestHandler):
         self.wfile.write("Thanks %s !" % form["your_name"].value)
         '''
 
-        print self.rfile.readline()
+        print self.headers
         self.wfile.write("Upload successful!")
         # self.deal_post_data()
         return
