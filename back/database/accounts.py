@@ -1,5 +1,5 @@
 import sqlite3 as lite
-import sys
+import sys, json
 
 con = 0
 cur = 0
@@ -46,7 +46,7 @@ def getUser(userid):
   con = lite.connect('accounts.db')
   with con:
     cur = con.cursor()
-    param = (str(userid))
+    param = (str(userid),)
     cur.execute('SELECT * FROM profiles WHERE uid = ?', param)
     data = cur.fetchall()
     return data
@@ -56,7 +56,7 @@ def getProbHist(userid):
   con = lite.connect('accounts.db')
   with con:
     cur = con.cursor()
-    param = (str(userid))
+    param = (str(userid),)
     cur.execute('SELECT * FROM problems WHERE uid = ?', param)
     data = cur.fetchall()
     return data
