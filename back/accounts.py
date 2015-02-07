@@ -37,9 +37,11 @@ def addProb(uid, prob, numTests):
 
     user = getUser(uid)
 
+    expire = datetime.datetime.now() + datetime.timedelta(7,0)
+    
     user[2] += [prob]
     user[3] += [datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")]
-    user[4] += [datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")]
+    user[4] += [expire.strftime("%I:%M%p on %B %d, %Y")]
     user[5] += [numTests]
 
     json_obj[user[0]] = user

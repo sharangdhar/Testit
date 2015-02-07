@@ -5,7 +5,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 
 from os import curdir, sep
 import cgi, sys, re, os, json, zipfile, subprocess, random
-import accounts
+from accounts import *
 
 PORT = '9001'
 tid = 0
@@ -286,7 +286,7 @@ class handler (BaseHTTPRequestHandler):
 
     def handle_profile(self, data):
         print data['uid']
-        self.wfile.write(json.dumps(getUsr(data['uid'])))
+        self.wfile.write(json.dumps(getUser(data['uid'])))
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
