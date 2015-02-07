@@ -112,7 +112,7 @@ class handler (BaseHTTPRequestHandler):
             env = zipfile.ZipFile("data/env/env_" + str(tid) + ".zip", "r")
             if not os.path.exists("data/env/env_" + str(tid)):
                 os.mkdir("data/env/env_" + str(tid))
-            env.extractall("data/env/env_" + str(tid) + "/")
+                env.extractall("data/env/env_" + str(tid) + "/")
             os.remove("data/env/env_" + str(tid) + ".zip")
         except:
             self.wfile.write("File submitted was not a zip file!")
