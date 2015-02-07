@@ -22,6 +22,8 @@
       $scope.uploader = new FileUploader();
       $scope.current_page = "landing";
       $scope.contrib_problem = "";
+      $scope.contrib_tests = [["","",""],["","",""],["","",""]];
+      $scope.contrib_challenges = [["","",""],["","",""],["","",""]];
       var test_cases = [];
       var test_text = "";
 
@@ -29,7 +31,7 @@
         $scope.current_page = page;
       };
 
-      $scope.validSubmissions = function(){
+      $scope.validSubmission = function(){
         test_cases = [$scope.assert_10, $scope.assert_11, $scope.assert_12, $scope.assert_20, $scope.assert_21, $scope.assert_22,
                       $scope.assert_30, $scope.assert_31, $scope.assert_32];
         for (var i=0; i< test.cases.length; i++){
@@ -38,12 +40,35 @@
             return false;
           }
         }
+        
+        return $scope.prbsub.trim()!="";
+      };
 
-        test_text = $scope.prbsub.trim();
-        return (test_text=="") ? false : true;
+      $scope.validChallenges = function(){
+        for (var i=0; i< $scope.contrib_challenges.length; i++){
+          if ($scope.contrib_challenges[i].trim()==""){
+            return false;
+          }
+        }
+
+        return true;
+      };
+
+      $scope.validUserTests = function(){
+        for (var i=0; i< $scope.contrib_tests.length; i++){
+          if ($scope.contrib_tests[i].trim()==""){
+            return false;
+          }
+        }
+
+        return $scope.success_setup.trim()!="";
       };
 
       $scope.uploadFiles = function(){
+        
+        if ($scope.uploader.queue.length == 0){
+          return null;
+        }
         
         for (var i = 0; i< $scope.uploader.queue.length; i++){
           $scope.uploader.queue[i].upload();
@@ -72,17 +97,15 @@
         return null;
       };
 
-      $scope.checkContributor = function(){
+      $scope.checkChallenges = function(){
 
         var form_data = {};
-        form_data.mode = "contributor";
+        form_data.mode = "contributor_check";
 
         form_data.tests = [];
-        form_data.tests.push({a10: $scope.assert_10, a11: $scope.assert_11, a12: $scope.assert_12});
-        form_data.tests.push({a20: $scope.assert_20, a21: $scope.assert_21, a22: $scope.assert_22});
-        form_data.tests.push({a30: $scope.assert_30, a31: $scope.assert_31, a32: $scope.assert_32});
-
-        form_data.ps = ($scope.prbsub==null)? "" : $scope.prbsub.trim();
+        for (var i=0; i< $scope.contrib_challenges; i++){
+          form_data.tests.push($scope.contrib_challenges[i]);
+        }
 
         console.log('sending post');
         $http.post('', form_data).
@@ -96,6 +119,46 @@
             });
         return null;
       };
+
+      $scope.submitContributor = function(){
+        
+        if ($scope.uploader.queue.length == 0){
+          return null;
+        }
+
+        for (var i = 0; i< $scope.uploader.queue.length; i++){
+          $scope.uploader.queue[i].upload();
+        }
+        var form_data = {};
+        form_data.mode = "contributor_tests";
+
+        form_data.tests = [];
+        for (var i=0; i< $scope.contrib_tests; i++){
+          form_data.tests.push($scope.contrib_tests[i]);
+        }
+
+        form_data.ps = $scope.success_setup.trim();
+
+        $http.post('', form_data).
+            success(function(data, status, headers, config) {
+              // this callback will be called asynchronously
+              // when the response is available
+            }).
+            error(function(data, status, headers, config) {
+              // called asynchronously if an error occurs
+              // or server returns response with an error status.
+            });
+        return null;
+
+      };
+
+      $scope.addTestCase = function(){
+        $scope.contrib_tests.push(["","",""]);
+      }
+
+      $scope.removeTestCase = function(){
+        $scope.contrib_tests.pop();
+      }
     }
 
     demoApp.controller('MainController',MainController);
@@ -205,6 +268,7 @@
                     Type problem here ....
                   </textarea>
                   <br>
+
                   <!-- test1 starting -->
                   <div class="row">
                     <label>Test 1:</label>
@@ -215,7 +279,7 @@
                       equal
                     </textarea>
                     <textarea ng-model="$parent.assert_12" rows="1" cols="38" style="resize:none;">
-                      solution 1 here ..
+                      test 1 here ..
                     </textarea>
                   </div>
                   <!-- test1 ending -->
@@ -230,7 +294,7 @@
                       equal
                     </textarea>
                     <textarea ng-model="$parent.assert_22" rows="1" cols="38" style="resize:none;">
-                      solution 2 here ..
+                      test 2 here ..
                     </textarea>
                   </div>
                   <!-- test 2 ending -->
@@ -245,7 +309,7 @@
                       equal
                     </textarea>
                     <textarea ng-model="$parent.assert_32" rows="1" cols="38" style="resize:none;">
-                      solution 3 here ..
+                      test 3 here ..
                     </textarea>
                   </div>
                   <!-- test 3 ending -->
@@ -282,7 +346,7 @@
       <div class="row">
         <form role="form">
               <div class="form-group text-center">
-                   <textarea ng-model="check" rows="10" cols="105" style="resize:none;">
+                   <textarea ng-model="$parent.check" rows="10" cols="105" style="resize:none;">
                       {{contrib_problem}}
                   </textarea>  
                   <br>
@@ -290,54 +354,23 @@
                   <div class="row text-center">
                     <h4 for="prbsub">Fill in missing parts of the Test Cases</h4>
                   </div>
-                  <!-- test1 starting -->
-                  <div class="row">
-                    <label for="check_10">Check 1:</label>
-                    <textarea ng-model="check_10" rows="1" cols="38" style="resize:none;">
-                      Put solution here
-                    </textarea>  
-                    <textarea ng-model="check_11" rows="1" cols="10" style="resize:none;">
-                      equal
-                    </textarea>
-                    <textarea ng-model="check_12" rows="1" cols="38" style="resize:none;">
-                      Put solution here
-                    </textarea>
-                  </div>
-                  <!-- test1 ending -->
 
-                  <!-- test 2 starting -->
-                  <div class="row">
-                    <label for="check_20">Check 2:</label>
-                    <textarea ng-model="check_20" rows="1" cols="38" style="resize:none;">
-                      Put solution here
+                  <div class="row" ng-repeat = "t in $parent.contrib_challenges">
+                    <label>Check {{$parent.contrib_challenges.indexOf(t) + 1}}</label>
+                    <textarea ng-model="t[0]" disabled rows="1" cols="38" style="resize:none;">
+                      
                     </textarea>  
-                    <textarea ng-model="check_21" rows="1" cols="10" style="resize:none;">
-                      equal
+                    <textarea ng-model="t[1]" disabled rows="1" cols="10" style="resize:none;">
+                      
                     </textarea>
-                    <textarea ng-model="check_22" rows="1" cols="38" style="resize:none;">
-                      Put solution here
+                    <textarea ng-model="t[2]" rows="1" cols="38" style="resize:none;">
+                      
                     </textarea>
                   </div>
-                  <!-- test 2 ending -->
-
-                  <!-- test 3 starting -->
-                  <div class="row">
-                    <label for="check_30">Check 3:</label>
-                    <textarea ng-model="check_30" rows="1" cols="38" style="resize:none;">
-                      Put solution here
-                    </textarea>  
-                    <textarea ng-model="check_31" rows="1" cols="10" style="resize:none;">
-                      equal
-                    </textarea>
-                    <textarea ng-model="check_32" rows="1" cols="38" style="resize:none;">
-                      Put solution here
-                    </textarea>
-                  </div>
-                  <!-- test 3 ending -->
                 
                
                   <div class="row">
-                    <button class="btn btn-success" ng-click=""> Submit </button>
+                    <button class="btn btn-success" ng-click="setPage('success')"> Submit </button>
                   </div>
               </div>
         </form>
@@ -357,75 +390,48 @@
       <div class="row">
         <form role="form">
               <div class="form-group text-center">
-                  <textarea ng-model="success" rows="10" cols="105" style="resize:none;">
+                  <textarea ng-model="$parent.success_setup" rows="10" cols="105" style="resize:none;">
                       {{contrib_problem}}
                   </textarea>  
                   <br>
                   <br>
+
                   <div class="row text-center">
-                    <h4 for="prbsub">Your Test Cases go here</h4>
+                    <h4 for="prbsub">Your Custom Test Cases go here</h4>
                   </div>
-                  <!-- test1 starting -->
-                  <div class="row">
-                    <label for="success_10">Solution 1:</label>
-                    <textarea ng-model="success_10" rows="1" cols="38" style="resize:none;">
-                      Put solution here
+                    <div class="row" ng-repeat = "t in $parent.contrib_tests">
+                    <label>Test {{$parent.contrib_tests.indexOf(t) + 1}}</label>
+                    <textarea ng-model="t[0]" rows="1" cols="38" style="resize:none;">
+                      thingy
                     </textarea>  
-                    <textarea ng-model="success_11" rows="1" cols="10" style="resize:none;">
-                      equal
+                    <textarea ng-model="t[1]" rows="1" cols="10" style="resize:none;">
+                      
                     </textarea>
-                    <textarea ng-model="success_12" rows="1" cols="38" style="resize:none;">
-                      Put solution here
-                    </textarea>
-                  </div>
-                  <!-- test1 ending -->
-
-                  <!-- test 2 starting -->
-                  <div class="row">
-                    <label for="success_20">Solution 2:</label>
-                    <textarea ng-model="success_20" rows="1" cols="38" style="resize:none;">
-                      Put solution here
-                    </textarea>  
-                    <textarea ng-model="success_21" rows="1" cols="10" style="resize:none;">
-                      equal
-                    </textarea>
-                    <textarea ng-model="success_22" rows="1" cols="38" style="resize:none;">
-                      Put solution here
+                    <textarea ng-model="t[2]" rows="1" cols="38" style="resize:none;">
+                      
                     </textarea>
                   </div>
-                  <!-- test 2 ending -->
-
-                  <!-- test 3 starting -->
-                  <div class="row">
-                    <label for="success_30">Solution 3:</label>
-                    <textarea ng-model="success_30" rows="1" cols="38" style="resize:none;">
-                      Put solution here
-                    </textarea>  
-                    <textarea ng-model="success_31" rows="1" cols="10" style="resize:none;">
-                      equal
-                    </textarea>
-                    <textarea ng-model="success_32" rows="1" cols="38" style="resize:none;">
-                      Put solution here
-                    </textarea>
-                  </div>
-                  <!-- test 3 ending -->
-
 
                   <!-- Add Tests button -->
                   <div class="row">
                     <div class="col-md-2 col-md-offset-3">
                       <a href="">
-                          <span class="glyphicon glyphicon-plus">
-                            Add Tests
+                          <span class="glyphicon glyphicon-plus" ng-click="addTestCase()">
+                            Add Test
+                          </span>
+                      </a>
+                      <a href="">
+                          <span class="glyphicon glyphicon-minus" ng-click="removeTestCase()">
+                            Remove Test
                           </span>
                       </a>
                     </div>
                   </div>
                   <!-- Add Tests ending-->
-   
+  
                
                   <div class="row">
-                    <button class="btn btn-success" ng-click=""> Submit </button>
+                    <button class="btn btn-success" ng-click="submitContributor()"> Submit </button>
                   </div>
               </div>
         </form>
