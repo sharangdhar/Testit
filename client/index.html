@@ -8,6 +8,8 @@
  
   
   <link href="css/bootstrap.min.css" rel="stylesheet"></link>
+  <link href="css/prettify.css" rel="stylesheet"></link>
+  
   <link href="css/form-signin.css" rel="stylesheet"></link>
 
   <script src="js/jquery-1.9.1.js" type='text/javascript'></script>
@@ -22,7 +24,6 @@
   <script src="https://rawgit.com/adamalbrecht/ngModal/master/dist/ng-modal.min.js"></script>
   <link href="https://rawgit.com/adamalbrecht/ngModal/master/dist/ng-modal.css" rel="stylesheet"></link>
   <script src="https://rawgit.com/lorenzofox3/Smart-Table/master/dist/smart-table.min.js"></script>
-  <!-- <script src="https://rawgit.com/Ciul/angular-facebook/master/lib/angular-facebook.js"></script> -->
   <script>
 
     var demoApp = angular.module('demoApp',['angularFileUpload','ngModal','smart-table','facebook']);
@@ -63,6 +64,7 @@
       $scope.success_setup = "";
       $scope.loggedIn = false;
       $scope.user_id = "";
+      $scope.user_data = [];
       var test_cases = [];
       var test_text = "";
 
@@ -70,12 +72,61 @@
         Facebook.getLoginStatus(function(response) {
           if(response.status === 'connected') {
             $scope.loggedIn = true;
-            consloe.log("logged in");
+            console.log("logged in");
+             Facebook.api('/me', function(response) {
+              $scope.user_id = response.id;
+              console.log("user_id :" + $scope.user_id);
+
+
+              var form_data = {};
+              form_data.mode = "login";
+              form_data.uid = $scope.user_id;
+
+              console.log('sending post');
+              $http.post('', form_data).
+                  success(function(data, status, headers, config) {
+                    
+                    form_data.mode = "profile";
+                    $http.post('', form_data).
+                    success(function(data, status, headers, config) {
+                        console.log("data :" + JSON.stringify(data));
+                    }).
+                    error(function(data, status, headers, config) {
+                      // called asynchronously if an error occurs
+                      // or server returns response with an error status.
+                    });
+
+
+
+                  }).
+                  error(function(data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                  });
+
+            });
           } else {
             $scope.loggedIn = false;
           }
         });
         console.log("log status :" + $scope.loggedIn)
+      };
+
+      $scope.setProfile = function(){
+        console.log("setting the profile");
+        var form_data = {};
+        form_data.mode = "profile";
+        form_data.uid = $scope.user_id;
+
+        $http.post('', form_data).
+          success(function(data, status, headers, config) {
+              console.log("data :" + JSON.stringify(data));
+          }).
+          error(function(data, status, headers, config) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+          });
+
       };
 
       $scope.setPage = function(page){
@@ -149,6 +200,7 @@
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               $scope.uploader.clearQueue();
+              console.log("\nupload\n");
               console.log("data :" + data);
               console.log("status: " + status);
               console.log("headers: " + headers);
@@ -195,7 +247,7 @@
         console.log("data tests: " + form_data.tests);
         form_data.problem_id = $scope.problem_id;
         console.log("problem id: " + form_data.problem_id);
-        form_data.uid = "jk94";
+        form_data.uid = $scope.used_id;
 
         console.log('sending post');
         $http.post('', form_data).
@@ -231,7 +283,7 @@
 
         form_data.setup = ($scope.success_setup == null) ? "" : $scope.success_setup.trim();
         form_data.problem_id = $scope.problem_id;
-        form_data.uid = "jk94";
+        form_data.uid = $scope.user_id;
 
         $http.post('', form_data).
             success(function(data, status, headers, config) {
@@ -255,7 +307,7 @@
       
       var form_data = {};
       form_data.mode = "contributor_tid";
-      form_data.uid = "jk94";
+      form_data.uid = $scope.user_id;
 
       $http.post('', form_data).
             success(function(data, status, headers, config) {
@@ -321,10 +373,6 @@
 
     demoApp.controller('MainController',MainController);
   </script>
-
-<script>
-  
-</script>
   <style>
             .my-drop-zone { border: dotted 3px lightgray; text-align:center;}
             .nv-file-over { border: dotted 3px red; text-align:center;} /* Default class applied to drop zones on over */
@@ -381,7 +429,7 @@
 </div>
 
 <div class="row text-center">
-<modal-dialog show='success_m' dialog-title='Problem Uploaded!' on-close="setPage('profile'); closeSuccess();">
+<modal-dialog show='success_m' dialog-title='Problem Uploaded!' on-close="setPage('profile'); closeSuccess();setProfile();">
   <div class="row text-center">
     Your problem has been uploaded to our servers! 
   </div>
@@ -401,7 +449,7 @@
 </div>
 
 <div class="row text-center">
-<modal-dialog show='tests_m' dialog-title='Tests Submitted!' on-close="setPage('contrib_results'); closeTests()">
+<modal-dialog show='tests_m' dialog-title='Tests Submitted!' on-close="setProfile();setPage('contrib_results'); closeTests()">
   Way to go! Close this window to see the results of your tests.
 </modal-dialog>
 </div>
@@ -665,7 +713,7 @@
 
     <!-- Success Page ends -->
 
-<div class="container" ng-if="(loggedIn == true) && (current_page == 'profile')">
+<div class="container" ng-if="(current_page == 'profile')">
    <div class="account-wall">
     <h2> User Profile </h2>
     <div class="row text-left">

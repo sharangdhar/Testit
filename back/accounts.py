@@ -36,6 +36,7 @@ def addProb(uid, prob, numTests):
     file.close()
 
     user = getUser(uid)
+    print uid
 
     expire = datetime.datetime.now() + datetime.timedelta(7,0)
     
