@@ -185,7 +185,8 @@ class handler (BaseHTTPRequestHandler):
         
         os.chdir("data/env/env_" + str(tid))
         file = open("testit.py", "a")
-        print all_tests
+        pos = file.tell()
+
         for test in all_tests:
             file.write("\n\n")
             file.write("assert("+test[0]+test[1]+test[2]+" )\n")
@@ -194,11 +195,15 @@ class handler (BaseHTTPRequestHandler):
 
         try:
             x=subprocess.check_call(["python", "testit.py"])
+            self.wfile.write("All tests passed!")
         except:
             self.wfile.write("Error detected! One or more test cases failed!")
 
+        file = open("testit.py", "a")
+        file.seek(pos, os.SEEK_SET)
+        file.truncate(pos)
+        file.close()
         os.chdir("../../..")
-        self.wfile.write("All tests passed!")
 
     def handle_contributor_tests(self, data):
         print "Success"
@@ -238,8 +243,13 @@ class handler (BaseHTTPRequestHandler):
         self.wfile.write("OK")
 
         file = open("data/results/result_" + str(tid), "a")
-        file.write("\n\n\n")
-        file.write(str(arr))
+
+        json_obj = json.loads(file.read())
+        json_obj[data['uid']] = str(arr)
+        file.write(json.dumps(json_obj))
+
+        self.wfile.write(json.dumps(json_obj[data['uid']]))
+
         file.close()
 
     def log_message(self, format, *args):
