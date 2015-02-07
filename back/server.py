@@ -4,7 +4,7 @@ import BaseHTTPServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 from os import curdir, sep
-import cgi, sys, re, os, json, zipfile
+import cgi, sys, re, os, json, zipfile, subprocess
 
 PORT = '9001'
 tid = 0
@@ -48,13 +48,10 @@ class handler (BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-        match = re.search("application/json", self.headers['Content-type'])
+        match = re.search(u"application/json", self.headers['Content-type'])
 
-        if match:
-            try:
-                data_string = self.rfile.read(int(self.headers['Content-Length']))
-            except:
-                return
+        if not match == None:
+            data_string = self.rfile.read(int(self.headers['Content-Length']))
             data = json.loads(data_string)
             if not data:
                 return        
@@ -118,11 +115,11 @@ class handler (BaseHTTPRequestHandler):
             env.extractall("data/env/env_" + str(tid) + "/")
             os.remove("data/env/env_" + str(tid) + ".zip")
         except:
-            print "Not a zip file!"
+            self.wfile.write("File submitted was not a zip file!")
             return
 
         if not os.path.exists("data/env/env_" + str(tid) + "/testit.py"):
-            print "testit.py not found!"
+            self.wfile.write("testit.py not found in submitted environment zip file!")
             return
 
         file = open("data/env/env_" + str(tid) + "/testit.py", "a")
@@ -135,15 +132,21 @@ class handler (BaseHTTPRequestHandler):
         file.write("assert( " + data['tests'][2]['a30'] + data['tests'][2]['a31'] 
                    + data['tests'][2]['a32'] + " )\n")
 
-        self.wfile.write("All tests passed!")
+        file.close()
+
+        try:            
+            os.chdir("data/env/env_" + str(tid))
+            x = subprocess.check_call(["python", "testit.py"])
+            os.chdir("../../..")
+            self.wfile.write("All tests passed!")
+        except:      
+            self.wfile.write("Error detected! One or more test cases failed!")
 
         tid = tid + 1
-        pass
 
     def handle_contribution(data):
         print "CONTRIBUTION!!"
         print data
-        pass
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
