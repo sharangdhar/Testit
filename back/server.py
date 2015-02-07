@@ -164,7 +164,17 @@ class handler (BaseHTTPRequestHandler):
         if (tid == 0):
             self.wfile.write("-1")
         else: 
-            self.wfile.write(str(random.randomint(0, tid-1)))
+            tid = random.randomint(0, tid-1)
+            if os.path.exists("data/checks/check_" + str(tid) + ".json"):
+                file = open("data/checks/check_" + str(tid) + ".json", "r")
+                data = json.loads(file.read())
+                data['problem_id'] = str(tid)
+                self.wfile.write(data)
+            else:
+                print "AHH"
+                self.wfile.write("-1")
+                return
+
 
     def handle_contributor_check(self, data):
         print "CONTRIBUTION!!"
