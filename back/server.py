@@ -170,7 +170,7 @@ class handler (BaseHTTPRequestHandler):
                 file = open("data/checks/check_" + str(tid) + ".json", "r")
                 data = json.loads(file.read())
                 data['problem_id'] = str(tid)
-                self.wfile.write(data)
+                self.wfile.write(json.dumps(data))
             else:
                 print "AHH"
                 self.wfile.write("-1")
