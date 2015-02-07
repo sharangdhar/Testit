@@ -209,10 +209,8 @@ class handler (BaseHTTPRequestHandler):
         tid = data['problem_id']
         # Need to add files to display page
         
-
         all_tests = data['tests']
         user_setup = data['setup']
-
 
         for test in all_tests:
             file = open("data/env/env_" + str(tid) + "/testit.py", "a")
@@ -227,9 +225,11 @@ class handler (BaseHTTPRequestHandler):
                 arr[i] = "Failed"
             os.chdir("../../..")
 
-        final.wfile.write(arr)
-        final.write("/n/n/n")
+        self.wfile.write("OK")
 
+        file = open("data/results/result_" + str(tid), "a")
+        file.write("\n\n\n")
+        file.write(arr)
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
@@ -245,6 +245,6 @@ try:
 
 except KeyboardInterrupt:
     print 'Exiting...\nThank you for using TestIt server! We sincerely hope you have a pleasant day :)!\n'
-    os.system("rm -rf data/env/* data/checks/*")
+    os.system("rm -rf data/env/* data/checks/* data/results/*")
     server.socket.close()
     exit(0)
