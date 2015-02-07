@@ -186,7 +186,6 @@ class handler (BaseHTTPRequestHandler):
         os.chdir("data/env/env_" + str(tid))
         for test in all_tests:
             file.write("\n\n")
-            file.write(user_setup)
             file.write("assert("+test[0]+test[1]+test[2]+" )\n")
 
         file.close()
