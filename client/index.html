@@ -26,6 +26,7 @@
   <script src="https://rawgit.com/lorenzofox3/Smart-Table/master/dist/smart-table.min.js"></script>
   <script>
 
+
     var demoApp = angular.module('demoApp',['angularFileUpload','ngModal','smart-table','facebook']);
     demoApp.config(function(FacebookProvider) {
        // Set your appId through the setAppId method or
@@ -392,7 +393,7 @@
             }
   </style>
 </head>
-<body ng-app="demoApp" ng-controller="MainController" uploader="uploader" nv-file-drop="">
+<body  style="background-color: #F4EFE3;" ng-app="demoApp" ng-controller="MainController" uploader="uploader" nv-file-drop="">
 
   <div class="navbar navbar-inverse navbar-fixed-top" position="static" role="navigation">
       <div class="container-fluid">
@@ -470,7 +471,6 @@
 </modal-dialog>
 </div>
 
-
 <!-- Developers starting -->
 
 <div class="container" ng-if="current_page=='developers'">
@@ -527,7 +527,7 @@
 <!-- Developers Ending -->
 
 <!--Problem Submission Starting -->
-<div class="container" ng-if="current_page == 'submission'">
+<div style="background-color:white; width: 855px;" class="container" ng-if="current_page == 'submission'">
       <div class="row text-center">
         <h2 for="prbsub">Problem Submission</h2>
       </div>
@@ -616,7 +616,7 @@
 
 <!--Contribution page Starting -->
 
-<div class="container" ng-if="current_page == 'contribution'">
+<div style="background-color:white; width: 855px;" class="container" ng-if="current_page == 'contribution'">
       <div class="row text-center">
         <h2 for="prbsub">Challenge</h2>
       </div>
@@ -659,7 +659,7 @@
 
     <!-- Success Page starts -->
 
-<div class="container" ng-if="current_page == 'success'">
+<div style="background-color:white;"class="container" ng-if="current_page == 'success'">
       <div class="row text-center">
         <h2 for="prbsub">Write Your Cases</h2>
       </div>
@@ -814,7 +814,7 @@
             <br>
             <h5><strong>About</strong></h5>
           <p class="text-center">
-          Anything about yourself.</p>
+          I am a Computer Science Major.</p>
             <br>
           
           </div>
