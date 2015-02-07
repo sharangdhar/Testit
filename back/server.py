@@ -181,13 +181,12 @@ class handler (BaseHTTPRequestHandler):
                 self.wfile.write("-1")
                 return
 
-            print data
             if os.path.exists("data/checks/check_" + str(tid_local) + ".json"):
                 file = open("data/checks/check_" + str(tid_local) + ".json", "r")                
                 json_obj = json.loads(file.read())
                 file.close()
                 json_obj['problem_id'] = str(tid_local)
-                self.wfile.write(json.dumps(data))
+                self.wfile.write(json.dumps(json_obj))
             else:
                 self.wfile.write("-1")
                 return
@@ -232,7 +231,6 @@ class handler (BaseHTTPRequestHandler):
         arr = {}
         i=0
 
-
         file = open("data/env/env_" + str(tid) + "/testit.py", "a")
         file.write("\n\n")
         file.write(user_setup)
@@ -257,7 +255,7 @@ class handler (BaseHTTPRequestHandler):
         os.chdir("../../..")
         file.close()
 
-        file = open("data/results/result_" + str(tid), "a")
+        file = open("data/results/result_" + str(tid), "r")
 
         json_obj = json.loads(file.read())
         json_obj[data['uid']] = str(arr)
