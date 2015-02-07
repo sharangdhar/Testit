@@ -57,13 +57,15 @@ class handler (BaseHTTPRequestHandler):
                 return        
             if data['mode'] == 'submission':
                 global tid
-                #try: 
-                check = open("data/checks/check_" + str(tid) + ".json", "w")
-                check.write(data_string)
-                check.close()
-                #except:
-                 #   return
+                try: 
+                    check = open("data/checks/check_" + str(tid) + ".json", "w")
+                    check.write(data_string)
+                    check.close()
+                except:
+                    return
                 self.handle_submission(data)
+            elif data['mode'] == 'contributor_tid':
+                self.handle_contributor_tid()
             elif data['mode'] == 'contributor_check':
                 self.handle_contributor_check(data)
             elif data['mode'] == 'contributor_tests':
@@ -150,44 +152,22 @@ class handler (BaseHTTPRequestHandler):
             os.chdir("data/env/env_" + str(tid))
             x = subprocess.check_call(["python", "testit.py"])
             self.wfile.write("All tests passed!")
+            tid = tid + 1
         except:      
             self.wfile.write("Error detected! One or more test cases failed!")
             os.system("rm -rf data/env/env_" + str(tid))
 
         os.chdir("../../..")
-        tid = tid + 1
 
-    def handle_contributor_check(data):
+    def handle_contributor_tid(self):
+        print "GETTING TID!!"
+        if (tid == 0):
+            self.wfile.write("-1")
+        else: 
+            self.wfile.write(str(random.randomint(0, tid-1)))
+
+    def handle_contributor_check(self, data):
         print "CONTRIBUTION!!"
-
-        global tid
-        tid_local = random.randint(0, tid)
-
-        # Need to add files to display page
-
-        if not os.path.exists("data/env/env_" + str(tid_local) + "/testit.py"):
-            self.wfile.write("testit.py not found in submitted environment zip file!")
-            return
-
-        file = open("data/env/env_" + str(tid_local) + "/testit.py", "a")
-        file.write("\n\n")
-
-        file.write("assert( " + data['tests'][0]['a10'] + data['tests'][0]['a11'] 
-                   + data['tests'][0]['a12'] +" )\n")
-        file.write("assert( " + data['tests'][1]['a20'] + data['tests'][1]['a21'] 
-                   + data['tests'][1]['a22'] + " )\n")
-        file.write("assert( " + data['tests'][2]['a30'] + data['tests'][2]['a31'] 
-                   + data['tests'][2]['a32'] + " )\n")
-
-        file.close()
-
-        try:            
-            os.chdir("data/env/env_" + str(tid_local))
-            x = subprocess.check_call(["python", "testit.py"])
-            os.chdir("../../..")
-            self.wfile.write("All tests passed!")
-        except:      
-            self.wfile.write("Error detected! One or more test cases failed!")
 
     def handle_contributor_tests(self, data):
         pass
