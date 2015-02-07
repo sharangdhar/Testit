@@ -176,8 +176,7 @@
               console.log("headers: " + headers);
               console.log("config: " + config);
               if (data == "All tests passed!"){
-                $scope.challenges_m= true;
-
+                $scope.challenges_m = true;
               } else {
                 $scope.success_f = true;
                 $scope.success_message = data + "   ";
@@ -206,7 +205,7 @@
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               console.log("\nfinished analyzing user tests\n");
-
+              tests_m = true;
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
@@ -270,6 +269,10 @@
 
       $scope.closeChallenges = function(){
         $scope.challenges_m = false;
+      };
+
+      $scope.closeTests = function(){
+        $scope.tests_m = false;
       }
     }
 
@@ -459,7 +462,7 @@
 </modal-dialog>
 
 <modal-dialog show='tests_m' dialog-title='Your Tests Compiled!'>
-  <button class="btn btn-success" ng-click="setPage('profile')"> Continue </button>
+  <button class="btn btn-success" ng-click="setPage('profile'); closeTests()"> Continue </button>
 </modal-dialog>
 
 <modal-dialog show='sorry_m' dialog-title='No Problems Found'>
