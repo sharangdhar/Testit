@@ -4,7 +4,7 @@ import BaseHTTPServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 from os import curdir, sep
-import cgi, sys, re, os, json
+import cgi, sys, re, os, json, zipfile
 
 PORT = '9001'
 tid = 0
@@ -57,9 +57,9 @@ class handler (BaseHTTPRequestHandler):
             if not data:
                 return        
             if data['mode'] == 'submission':
-                self.handle_submission(data_string)
+                self.handle_submission(data)
             elif data['mode'] == 'contribution':
-                self.handle_contribution(data_string)
+                self.handle_contribution(data)
         
         else:
             self.deal_post_data()
@@ -84,10 +84,10 @@ class handler (BaseHTTPRequestHandler):
         line = self.rfile.readline()
         remainbytes -= len(line)
         try:
-            out = open("data/" + fn, 'wb')
+            out = open("data/env/env_" + str(tid) + ".zip", 'wb')
         except IOError:
             return (False, "Can't create file to write, do you have permission to write?")
-                
+
         preline = self.rfile.readline()
         remainbytes -= len(preline)
         while remainbytes > 0:
@@ -108,9 +108,31 @@ class handler (BaseHTTPRequestHandler):
     def handle_submission(self, data):
         print "SUBMISSION!!"
         global tid
-        file = open("data/tests/test_" + str(tid) + ".json", 'w')
-        file.write(data)
-        file.close()
+
+        try:
+            env = zipfile.ZipFile("data/env/env_" + str(tid) + ".zip", "r")
+            if not os.path.exists("data/env/env_" + str(tid)):
+                os.mkdir("data/env/env_" + str(tid))
+            env.extractall("data/env/env_" + str(tid) + "/")
+            os.remove("data/env/env_" + str(tid) + ".zip")
+        except:
+            print "Not a zip file!"
+            return
+
+        if not os.path.exists("data/env/env_" + str(tid) + "/testit.py"):
+            print "testit.py not found!"
+            return
+
+        file = open("data/env/env_" + str(tid) + "/testit.py", "a")
+        file.write("\n\n")
+
+        file.write("assert( " + data['tests'][0]['a10'] + data['tests'][0]['a11'] 
+                   + data['tests'][0]['a12'] +" )\n")
+        file.write("assert( " + data['tests'][1]['a20'] + data['tests'][1]['a21'] 
+                   + data['tests'][1]['a22'] + " )\n")
+        file.write("assert( " + data['tests'][2]['a30'] + data['tests'][2]['a31'] 
+                   + data['tests'][2]['a32'] + " )\n")
+
         tid = tid + 1
         pass
 
