@@ -48,9 +48,9 @@ class handler (BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-        match = re.search("application/json", self.headers['Content-type'])
+        match = re.search(u"application/json", self.headers['Content-type'])
 
-        if match:
+        if not match == None:
             try:
                 data_string = self.rfile.read(int(self.headers['Content-Length']))
             except:
