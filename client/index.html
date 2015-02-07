@@ -66,23 +66,17 @@
       var test_cases = [];
       var test_text = "";
 
-      /*
-      $scope.init = function(){
+      $scope.initialize = function(){
         Facebook.getLoginStatus(function(response) {
           if(response.status === 'connected') {
             $scope.loggedIn = true;
-            Facebook.api('/me', function(response) {
-              $scope.user_id = response.id;
-              console.log("user id :" + $scope.user_id);
-              $scope.current_page = "profile";
-              console.log($scope.current_page);
-            });
-
+            consloe.log("logged in");
           } else {
             $scope.loggedIn = false;
           }
         });
-      }; */
+        console.log("log status :" + $scope.loggedIn)
+      };
 
       $scope.setPage = function(page){
         $scope.current_page = page;
@@ -373,27 +367,10 @@
 <br />
 
 
-<!--
-
-<modal-dialog show="loggedIn == false" ng-init="init()">
-  <div class="container">
-    <div class="row text-center">
-        <div class="col-md-4">
-            <div class="account-wall"><br>
-                <img class="profile-img" src="images/user_icon.png"
-                    alt="">
-                    <br><br><br><br>
-                    <div class="row">
-                      <div align="center">
-                        <div align="center" class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true">
-                        </div>
-                      </div>
-                    </div>
-             </div>
-         </div>
-     </div>
- </div>
-<modal-dialog> -->
+<div ng-init="initialize()">
+    <div align="center" class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true">
+    </div>
+</div> 
 <!-- Login Page ends -->
 
 <!-- Modal Dialogs-->
@@ -688,7 +665,7 @@
 
     <!-- Success Page ends -->
 
-<div class="container" ng-if="current_page == 'profile'">
+<div class="container" ng-if="(loggedIn == true) && (current_page == 'profile')">
    <div class="account-wall">
     <h2> User Profile </h2>
     <div class="row text-left">
