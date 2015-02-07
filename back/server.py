@@ -159,17 +159,30 @@ class handler (BaseHTTPRequestHandler):
 
         os.chdir("../../..")
 
-    def handle_contributor_tid(self):
+    def handle_contributor_tid(self, data):
         print "GETTING TID!!"
         global tid
         if (tid == 0):
             self.wfile.write("-1")
         else:
-            tid_local = random.randint(0, tid-1)
+            tid_local = 0
+            while (tid_local < tid):
+                if os.path.exists("data/results/result_" + str(tid_local)):
+                    file = open("data/results/result_" + str(tid_local), "r")
+                json_obj = json.loads(file.read())
+                if not json_obj[data['uid']] == None:
+                    break
+
+            if tid_local >= tid:
+                self.wfile.write("-1")
+                file.close()
+                return
+
             if os.path.exists("data/checks/check_" + str(tid_local) + ".json"):
-                file = open("data/checks/check_" + str(tid_local) + ".json", "r")
-                data = json.loads(file.read())
-                data['problem_id'] = str(tid_local)
+                file = open("data/checks/check_" + str(tid_local) + ".json", "r")                
+                json_obj = json.loads(file.read())
+                file.close()
+                json_obj['problem_id'] = str(tid_local)
                 self.wfile.write(json.dumps(data))
             else:
                 self.wfile.write("-1")
