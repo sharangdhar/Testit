@@ -69,7 +69,7 @@ class handler (BaseHTTPRequestHandler):
             elif data['mode'] == 'contributor_check':
                 self.handle_contributor_check(data)
             elif data['mode'] == 'contributor_tests':
-                self.handle_contributer_tests(data)
+                self.handle_contributor_tests(data)
         else:
             self.deal_post_data()
 
