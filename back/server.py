@@ -161,6 +161,7 @@ class handler (BaseHTTPRequestHandler):
 
     def handle_contributor_tid(self):
         print "GETTING TID!!"
+        global tid
         if (tid == 0):
             self.wfile.write("-1")
         else: 
