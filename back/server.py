@@ -264,6 +264,6 @@ try:
 
 except KeyboardInterrupt:
     print 'Exiting...\nThank you for using TestIt server! We sincerely hope you have a pleasant day :)!\n'
-    os.system("rm -rf data/env/* data/checks/*")
+    os.system("rm -rf data/env/* data/checks/* data/results/*")
     server.socket.close()
     exit(0)
