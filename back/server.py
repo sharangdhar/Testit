@@ -133,6 +133,8 @@ class handler (BaseHTTPRequestHandler):
         file.write("assert( " + data['tests'][2]['a30'] + data['tests'][2]['a31'] 
                    + data['tests'][2]['a32'] + " )\n")
 
+        self.wfile.write("All tests passed!")
+
         tid = tid + 1
         pass
 
