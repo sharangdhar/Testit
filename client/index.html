@@ -28,6 +28,12 @@
       $scope.contrib_problem = "";
       $scope.contrib_tests = [["","",""],["","",""],["","",""]];
       $scope.contrib_challenges = [["","",""],["","",""],["","",""]];
+      $scope.drop_text = "Drop Code Folder/Files here";
+      $scope.success_m= false;
+      $scope.success_f = false;
+      $scope.success_message= "";
+      $scope.display_challenges_modal = false;
+
       var test_cases = [];
       var test_text = "";
 
@@ -91,12 +97,19 @@
         console.log('sending post');
         $http.post('', form_data).
             success(function(data, status, headers, config) {
-              // this callback will be called asynchronously
-              // when the response is available
+              console.log("data :" + data);
+              console.log("status: " + status);
+              console.log("headers: " + headers);
+              console.log("config: " + config);
+              if (data == "All tests passed!"){
+                $scope.success_m= true;
+              } else {
+                $scope.success_f = true;
+                $scope.success_message = data + "   ";
+              }
             }).
             error(function(data, status, headers, config) {
-              // called asynchronously if an error occurs
-              // or server returns response with an error status.
+              console.log("oh noes");
             });
         return null;
       };
@@ -203,13 +216,11 @@
       testAPI();
     } else if (response.status === 'not_authorized') {
       // The person is logged into Facebook, but not your app.
-      document.getElementById('status').innerHTML = 'Please log ' +
-        'into this app.';
+      console.log('Please log into this app.');
     } else {
       // The person is not logged into Facebook, so we're not sure if
       // they are logged into this app or not.
-      document.getElementById('status').innerHTML = 'Please log ' +
-        'into Facebook.';
+      console.log('Please log into this app.');
     }
   }
 
@@ -264,8 +275,6 @@
     console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', function(response) {
       console.log('Successful login for: ' + response.name);
-      document.getElementById('status').innerHTML =
-        'Thanks for logging in, ' + response.name + '!';
     });
   }
 </script>
@@ -313,26 +322,30 @@
 
 
 <!-- Login Page starts -->
-<div class="container text-center">
+<div class="container text-center" ng-if="current_page == 'landing'">
   <br><br><br><br><br><br><br><br><br><br>
   <div class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true"></div>
  <!-- <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-  </fb:login-button> -->
+  </fb:login-button> -->  
 
 </div>
   <!-- Login Page ends -->
 
 
 <!-- Modal Dialogs-->
-<modal-dialog ng-model="$parent.submission_dialog" show='false' dialog-title='Your Submission Compiled!'>
+<modal-dialog show='success_m ' dialog-title='Your Submission Compiled!'>
   <button class="btn btn-success" ng-click=""> Continue </button>
 </modal-dialog>
 
-<modal-dialog ng-model="$parent.contributor_test_dialog" show='false' dialog-title='Your Passed the Challenges!'>
+<modal-dialog show='success_f' dialog-title='Your Submission Did Not Compile'>
+  {{success_message}} <button class="btn btn-primary" ng-click=""> Continue </button>
+</modal-dialog>
+
+<modal-dialog show='display_challenges_modal' dialog-title='Your Passed the Challenges!'>
   <button class="btn btn-success" ng-click=""> Continue </button>
 </modal-dialog>
 
-<modal-dialog ng-model="$parent.contributor_test_dialog" show='false' dialog-title='Your Tests Compiled!'>
+<modal-dialog show='false' dialog-title='Your Tests Compiled!'>
   <button class="btn btn-success" ng-click=""> Continue </button>
 </modal-dialog>
 
@@ -455,7 +468,7 @@
                   <div class="row">
                       <div class="col-md-4 col-md-offset-4">
                         <div class="well my-drop-zone"  nv-file-over="" uploader="uploader">
-                           Drop Code Folder/Files here
+                           {{drop_text}}
                         </div>
                       </div>
                   </div>
