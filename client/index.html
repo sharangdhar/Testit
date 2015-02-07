@@ -63,7 +63,7 @@
       $scope.assert_12 = "9";
       $scope.success_setup = "";
       $scope.loggedIn = false;
-      $scope.user_id = "";
+      $scope.uid = "";
       $scope.user_data = [];
       var test_cases = [];
       var test_text = "";
@@ -74,13 +74,13 @@
             $scope.loggedIn = true;
             console.log("logged in");
              Facebook.api('/me', function(response) {
-              $scope.user_id = response.id;
-              console.log("user_id :" + $scope.user_id);
+              $scope.uid = response.id;
+              console.log("user_id :" + $scope.uid);
 
 
               var form_data = {};
               form_data.mode = "login";
-              form_data.uid = $scope.user_id;
+              form_data.uid = $scope.uid;
 
               console.log('sending post');
               $http.post('', form_data).
@@ -90,6 +90,11 @@
                     $http.post('', form_data).
                     success(function(data, status, headers, config) {
                         console.log("data :" + JSON.stringify(data));
+
+                        $scope.user_data = [];
+                        for (var i=0; i<data[3].length;i++){
+                          $scope.user_data.push({id: (i+1), up: data[3][i],exp:data[4][i],sub:data[5][i]});
+                        } 
                     }).
                     error(function(data, status, headers, config) {
                       // called asynchronously if an error occurs
@@ -116,11 +121,15 @@
         console.log("setting the profile");
         var form_data = {};
         form_data.mode = "profile";
-        form_data.uid = $scope.user_id;
+        form_data.uid = $scope.uid;
 
         $http.post('', form_data).
           success(function(data, status, headers, config) {
               console.log("data :" + JSON.stringify(data));
+              $scope.user_data = [];
+              for (var i=0; i<data[3].length;i++){
+                $scope.user_data.push({id: (i+1), up: data[3][i],exp:data[4][i],sub:data[5][i]});
+              } 
           }).
           error(function(data, status, headers, config) {
             // called asynchronously if an error occurs
@@ -283,7 +292,7 @@
 
         form_data.setup = ($scope.success_setup == null) ? "" : $scope.success_setup.trim();
         form_data.problem_id = $scope.problem_id;
-        form_data.uid = $scope.user_id;
+        form_data.uid = $scope.uid;
 
         $http.post('', form_data).
             success(function(data, status, headers, config) {
@@ -307,7 +316,7 @@
       
       var form_data = {};
       form_data.mode = "contributor_tid";
-      form_data.uid = $scope.user_id;
+      form_data.uid = $scope.uid;
 
       $http.post('', form_data).
             success(function(data, status, headers, config) {
@@ -749,17 +758,21 @@
       </div>
       <div class="col-md-6">
          <br/> <br/> <br/>
-        <table st-table="test_data" st-safe-src="test_data" class="table table-striped" >
+        <table st-table="user_data" st-safe-src="user_data" class="table table-striped" >
           <thead>
           <tr>
-            <th st-sort="result">Function</th>
-            <th st-sort="result" st-sort-default="reverse">Result</th>
+            <th>Test</th>
+            <th>Uploaded On</th>
+            <th>Expires On</th>
+            <th>Case Submitted<th>
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="row in test_data">
-            <td>{{row.func}}</td>
-            <td>{{row.result}}</td>
+          <tr ng-repeat="row in user_data">
+            <td>{{row.id}}</td>
+            <td>{{row.up}}</td>
+            <td>{{row.exp}}</td>
+            <td>{{row.sub}}</td>
           </tr>
           </tbody>
         </table>
