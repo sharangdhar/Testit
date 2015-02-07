@@ -4,7 +4,7 @@ import BaseHTTPServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 from os import curdir, sep
-import cgi, sys
+import cgi, sys, re, os
 
 PORT = '9001'
 
@@ -43,20 +43,22 @@ class handler (BaseHTTPRequestHandler):
         except IOError:
             self.send_error(404,'File Not Found: %s' % self.path)
 
-	def do_POST(self):
-            if self.path=="/send":
-                form = cgi.FieldStorage(
-                    fp=self.rfile, 
-                    headers=self.headers,
-                    environ={'REQUEST_METHOD':'POST',
-                             'CONTENT_TYPE':self.headers['Content-Type'],
-                         })
-
-                print "Your name is: %s" % form["your_name"].value
-                self.send_response(200)
-                self.end_headers()
-                self.wfile.write("Thanks %s !" % form["your_name"].value)
-            return
+    def do_POST(self):
+        if self.path=="/send":
+            form = cgi.FieldStorage(
+                fp=self.rfile, 
+                headers=self.headers,
+                environ={'REQUEST_METHOD':'POST',
+                         'CONTENT_TYPE':self.headers['Content-Type'],
+                     })
+            
+            print "Your name is: %s" % form["your_name"].value
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write("Thanks %s !" % form["your_name"].value)
+        else: 
+            self.deal_post_data()
+        return
 
     # From https://gist.github.com/UniIsland/3346170
     def deal_post_data(self):
@@ -71,7 +73,7 @@ class handler (BaseHTTPRequestHandler):
         fn = re.findall(r'Content-Disposition.*name="file"; filename="(.*)"', line)
         if not fn:
             return (False, "Can't find out file name...")
-        path = self.translate_path(self.path)
+        path = self.path
         fn = os.path.join(path, fn[0])
         line = self.rfile.readline()
         remainbytes -= len(line)
@@ -98,7 +100,6 @@ class handler (BaseHTTPRequestHandler):
                 out.write(preline)
                 preline = line
         return (False, "Unexpect Ends of data.")
-
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
