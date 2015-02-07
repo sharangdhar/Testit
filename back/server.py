@@ -187,8 +187,9 @@ class handler (BaseHTTPRequestHandler):
         for test in all_tests:
             file.write("\n\n")
             file.write(user_setup)
-            file.write("assert("+test[0]+test[1]+test[2]+" )\n")     
-            file.close()
+            file.write("assert("+test[0]+test[1]+test[2]+" )\n")
+
+        file.close()
 
         try:
             x=subprocess.check_call(["python", "testit.py"])
