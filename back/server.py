@@ -164,12 +164,12 @@ class handler (BaseHTTPRequestHandler):
         global tid
         if (tid == 0):
             self.wfile.write("-1")
-        else: 
-            tid = random.randint(0, tid-1)
-            if os.path.exists("data/checks/check_" + str(tid) + ".json"):
-                file = open("data/checks/check_" + str(tid) + ".json", "r")
+        else:
+            tid_local = random.randint(0, tid-1)
+            if os.path.exists("data/checks/check_" + str(tid_local) + ".json"):
+                file = open("data/checks/check_" + str(tid_local) + ".json", "r")
                 data = json.loads(file.read())
-                data['problem_id'] = str(tid)
+                data['problem_id'] = str(tid_local)
                 self.wfile.write(json.dumps(data))
             else:
                 self.wfile.write("-1")
