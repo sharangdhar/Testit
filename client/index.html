@@ -19,8 +19,9 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.6/es5-shim.min.js"></script>
   <script src="https://rawgit.com/adamalbrecht/ngModal/master/dist/ng-modal.min.js"></script>
   <link href="https://rawgit.com/adamalbrecht/ngModal/master/dist/ng-modal.css" rel="stylesheet"></link>
+  <script src="https://rawgit.com/lorenzofox3/Smart-Table/master/dist/smart-table.min.js"></script>
   <script>
-    var demoApp = angular.module('demoApp',['angularFileUpload','ngModal']);
+    var demoApp = angular.module('demoApp',['angularFileUpload','ngModal','smart-table']);
 
     function MainController ($scope, $http, $location, FileUploader){
       $scope.uploader = new FileUploader();
@@ -32,15 +33,17 @@
       $scope.incomplete = false;
       $scope.incomplete_message= "";
       $scope.success_m= false;
-      $scope.success_f = false;
+      $scope.failure_m = false;
       $scope.success_message= "";
       $scope.challenges_m = false;
+      $scope.challenges_message = false;
 
       $scope.sorry_m = false;
       $scope.problem_id = "";
       var challenges = [];
       $scope.tests_m = false;
 
+      $scope.table_demo = [{name: "JSON", coolness:"Passed"},{name:"SML",coolness:"Failed"},{name:"Python",coolness:"Failed"}];
       var test_cases = [];
       var test_text = "";
 
@@ -61,8 +64,9 @@
       };
 
       $scope.validChallenges = function(){
+
         for (var i=0; i< $scope.contrib_challenges.length; i++){
-          if ($scope.contrib_challenges[i].trim()==""){
+          if ($scope.contrib_challenges[i][3].trim()==""){
             return false;
           }
         }
@@ -133,7 +137,7 @@
 
                 $scope.prbsub = "";
               } else {
-                $scope.success_f = true;
+                $scope.failure_m = true;
                 $scope.success_message = data + "   ";
               }
             }).
@@ -145,30 +149,38 @@
       };
 
       $scope.checkChallenges = function(){
-
+        /*
         if(!$scope.validChallenges()){
           $scope.incomplete = true;
           $scope.incomplete_message = "One or more required fields was not filled out.";
           return null;
-        }
+        } */
 
         var form_data = {};
         form_data.mode = "contributor_check";
 
-        form_data.tests = [];
-        for (var i=0; i< $scope.contrib_challenges; i++){
-          form_data.tests.push($scope.contrib_challenges[i]);
-        }
+        form_data.tests = $scope.contrib_challenges;
+        console.log("\n");
+        console.log("data tests: " + form_data.tests);
+        form_data.problem_id = $scope.problem_id;
+        console.log("problem id: " + form_data.problem_id);
+        form_data.uid = "jk94";
 
         console.log('sending post');
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               // this callback will be called asynchronously
               // when the response is available
-              console.log("data :" + data);
+             console.log("data :" + data);
               console.log("status: " + status);
               console.log("headers: " + headers);
               console.log("config: " + config);
+              if (data == "All tests passed!"){
+                $scope.challenges_m = true;
+              } else {
+                $scope.failure_m = true;
+                $scope.success_message = data + "   ";
+              }
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
@@ -182,20 +194,18 @@
         var form_data = {};
         form_data.mode = "contributor_tests";
 
-        form_data.tests = [];
-        for (var i=0; i< $scope.contrib_tests; i++){
-          form_data.tests.push($scope.contrib_tests[i]);
-        }
+        console.log("\n\nContrib tests :" + $scope.contrib_tests);
+        form_data.tests = $scope.contrib_tests;
+        console.log("\ndata tests: " + form_data.tests);
 
         form_data.setup = ($scope.success_setup == null) ? "" : $scope.success_setup.trim();
         form_data.problem_id = $scope.problem_id;
-        console.log("problem_id: " + $scope.problem_id);
+        form_data.uid = "jk94";
 
-        console.log('sending post');
         $http.post('', form_data).
             success(function(data, status, headers, config) {
-              console.log("\nfinished analyzing user tests\n");
-
+              $scope.tests_m = true;
+              console.log("\nuser's test data: " + JSON.stringify(data) + "\n");
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
@@ -208,6 +218,7 @@
       
       var form_data = {};
       form_data.mode = "contributor_tid";
+      form_data.uid = "jk94";
 
       $http.post('', form_data).
             success(function(data, status, headers, config) {
@@ -220,7 +231,7 @@
                 $scope.sorry_m = true;
               } else {
                 $scope.problem_id = data.problem_id;
-                console.log("data.ps :" + data.ps);
+                console.log("problem_id: " + $scope.problem_id);
                 $scope.check_field = data.ps;
 
                 challenges = [];
@@ -256,6 +267,15 @@
       $scope.closeSorry = function(){
         $scope.sorry_m = false;
       };
+
+      $scope.closeChallenges = function(){
+        $scope.challenges_m = false;
+      };
+
+      $scope.closeTests = function(){
+        $scope.tests_m = false;
+      };
+
     }
 
     demoApp.controller('MainController',MainController);
@@ -431,20 +451,20 @@
 {{incomplete_message}}
 </modal-dialog>
 
-<modal-dialog show='success_m' dialog-title='Your Submission Compiled!'>
-  <button class="btn btn-success" ng-click="setPage('profile'); closeSuccess()"> Continue </button>
+<modal-dialog show='success_m' dialog-title='Submission Uploaded!'>
+  Your problem has been uploaded to our servers! <button class="btn btn-success" ng-click="setPage('profile'); closeSuccess()"> Continue </button>
 </modal-dialog>
 
-<modal-dialog show='success_f' dialog-title='Your Submission Did Not Compile'>
+<modal-dialog show='failure_m' dialog-title='Submission Did Not Compile'>
 {{success_message}}
 </modal-dialog>
 
-<modal-dialog show='challenges_m' dialog-title='Your Passed the Challenges!'>
-  <button class="btn btn-success" ng-click="setPage('success')"> Continue </button>
+<modal-dialog show='challenges_m' dialog-title='You Passed!'>
+  <button class="btn btn-success" ng-click="setPage('success'); closeChallenges()"> Continue </button>
 </modal-dialog>
 
-<modal-dialog show='tests_m' dialog-title='Your Tests Compiled!'>
-  <button class="btn btn-success" ng-click="setPage('profile')"> Continue </button>
+<modal-dialog show='tests_m' dialog-title='Tests Submitted!'>
+  <button class="btn btn-success" ng-click="setPage('profile'); closeTests()"> Continue </button>
 </modal-dialog>
 
 <modal-dialog show='sorry_m' dialog-title='No Problems Found'>
@@ -630,7 +650,7 @@
                 
                
                   <div class="row">
-                    <button class="btn btn-success" ng-click="setPage('success')"> Submit </button>
+                    <button class="btn btn-success" ng-click="checkChallenges()"> Submit </button>
                   </div>
               </div>
         </form>
@@ -700,6 +720,23 @@
       <!-- Outermost row ends here -->
 
     </div>
+
+<br />
+<br />
+<table st-table="table_demo" st-safe-src="table_demo" class="table table-striped" ng-if="current_page!= 'contrib_result'" >
+  <thead>
+  <tr>
+    <th st-sort="coolness">Function</th>
+    <th st-sort="coolness" st-sort-default="reverse">Result</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="row in table_demo">
+    <td>{{row.name}}</td>
+    <td>{{row.coolness}}</td>
+  </tr>
+  </tbody>
+</table>
 
     <!-- Success Page ends -->
 

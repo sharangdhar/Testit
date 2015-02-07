@@ -51,7 +51,7 @@ class handler (BaseHTTPRequestHandler):
         match = re.search(u"application/json", self.headers['Content-type'])
 
         if not match == None:
-            data_string = self.rfile.read(int(self.headers['Content-len']))
+            data_string = self.rfile.read(int(self.headers['Content-length']))
             data = json.loads(data_string)
             if not data:
                 return        
@@ -65,7 +65,7 @@ class handler (BaseHTTPRequestHandler):
                     return
                 self.handle_submission(data)
             elif data['mode'] == 'contributor_tid':
-                self.handle_contributor_tid()
+                self.handle_contributor_tid(data)
             elif data['mode'] == 'contributor_check':
                 self.handle_contributor_check(data)
             elif data['mode'] == 'contributor_tests':
@@ -77,7 +77,7 @@ class handler (BaseHTTPRequestHandler):
     # From https://gist.github.com/UniIsland/3346170
     def deal_post_data(self):
         boundary = self.headers.plisttext.split("=")[1]
-        remainbytes = int(self.headers['content-len'])
+        remainbytes = int(self.headers['content-length'])
         line = self.rfile.readline()
         remainbytes -= len(line)
         if not boundary in line:
@@ -159,20 +159,35 @@ class handler (BaseHTTPRequestHandler):
 
         os.chdir("../../..")
 
-    def handle_contributor_tid(self):
+    def handle_contributor_tid(self, data):
         print "GETTING TID!!"
         global tid
         if (tid == 0):
             self.wfile.write("-1")
-        else: 
-            tid = random.randint(0, tid-1)
-            if os.path.exists("data/checks/check_" + str(tid) + ".json"):
-                file = open("data/checks/check_" + str(tid) + ".json", "r")
-                data = json.loads(file.read())
-                data['problem_id'] = str(tid)
-                self.wfile.write(json.dumps(data))
+        else:
+            tid_local = 0
+            while (tid_local < tid):
+                if os.path.exists("data/results/result_" + str(tid_local)):
+                    file = open("data/results/result_" + str(tid_local), "r")
+                    json_obj = json.loads(file.read())
+                    file.close()
+                    if json_obj[data['uid']] == None:
+                        break
+                else:
+                    break
+                tid_local = tid_local + 1
+
+            if tid_local >= tid:
+                self.wfile.write("-1")
+                return
+
+            if os.path.exists("data/checks/check_" + str(tid_local) + ".json"):
+                file = open("data/checks/check_" + str(tid_local) + ".json", "r")                
+                json_obj = json.loads(file.read())
+                file.close()
+                json_obj['problem_id'] = str(tid_local)
+                self.wfile.write(json.dumps(json_obj))
             else:
-                print "AHH"
                 self.wfile.write("-1")
                 return
 
@@ -180,56 +195,75 @@ class handler (BaseHTTPRequestHandler):
     def handle_contributor_check(self, data):
         print "CONTRIBUTION!!"
         
-        file.write("\n\n")
-
         tid = data['problem_id']
-        # Need to add files to display pag
 
         all_tests = data['tests']
         
-        for test in all_tests:
-            
-            file.write("\n\n")
-            file.write(user_setup)
-            file.write("assert("+test[0]+test[1]+test[2]+" )\n")     
-            try:
-                os.chdir("data/env/env_" + str(tid))
-                x=subprocess.check_call(["python", "testit.py"])
-                arr[i] = "Passed"
-            except:      
-                arr[i] = "Failed"
-            os.chdir("../../..")
+        os.chdir("data/env/env_" + str(tid))
+        file = open("testit.py", "a")
+        pos = file.tell()
 
-        self.wfile.write(arr)
-        self.write("/n/n/n")
+        for test in all_tests:
+            file.write("\n\n")
+            file.write("assert("+test[0]+test[1]+test[2]+" )\n")
+
+        file.close()
+
+        try:
+            x=subprocess.check_call(["python", "testit.py"])
+            self.wfile.write("All tests passed!")
+        except:
+            self.wfile.write("Error detected! One or more test cases failed!")
+
+        file = open("testit.py", "a")
+        file.seek(pos, os.SEEK_SET)
+        file.truncate(pos)
+        file.close()
+        os.chdir("../../..")
 
     def handle_contributor_tests(self, data):
         print "Success"
         
         tid = data['problem_id']
-        # Need to add files to display page
         
         all_tests = data['tests']
         user_setup = data['setup']
+        arr = {}
+        i=0
+
+        file = open("data/env/env_" + str(tid) + "/testit.py", "a")
+        file.write("\n\n")
+        file.write(user_setup)
+        file.write("\n\n")
+        os.chdir("data/env/env_" + str(tid))
+        pos = file.tell()
 
         for test in all_tests:
-            file = open("data/env/env_" + str(tid) + "/testit.py", "a")
-            file.write("\n\n")
-            file.write(user_setup)
-            file.write("assert("+test[0]+test[1]+test[2]+" )\n")     
+            file.write("assert("+test[0]+test[1]+test[2]+" )\n")
+            file.close()
+
             try:
-                os.chdir("data/env/env_" + str(tid))
                 x=subprocess.check_call(["python", "testit.py"])
-                arr[i] = "Passed"
-            except:      
-                arr[i] = "Failed"
-            os.chdir("../../..")
+                arr[test[0]+test[1]+test[2]] = "Passed"
+            except:
+                arr[test[0]+test[1]+test[2]] = "Failed"
+            i=i+1
+            file = open("testit.py", "a")
+            file.seek(pos, os.SEEK_SET)
+            file.truncate(pos)
 
-        self.wfile.write("OK")
+        os.chdir("../../..")
+        file.close()
 
-        file = open("data/results/result_" + str(tid), "a")
-        file.write("\n\n\n")
-        file.write(arr)
+        file = open("data/results/result_" + str(tid), "r")
+
+        json_obj = json.loads(file.read())
+        json_obj[data['uid']] = str(arr)
+        file.write(json.dumps(json_obj))
+
+        self.wfile.write(json.dumps(json_obj[data['uid']]))
+
+        file.close()
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
