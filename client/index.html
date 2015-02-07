@@ -21,9 +21,32 @@
     function MainController ($scope, $http, $location, FileUploader){
       $scope.uploader = new FileUploader();
       $scope.current_page = "landing";
+      var test_cases = [];
+      var test_text = "";
 
       $scope.setPage = function(page){
         $scope.current_page = page;
+      };
+
+      $scope.validSubmissions = function(){
+        /*test_cases = [$scope.assert_10, $scope.assert_11, $scope.assert_12, $scope.assert_20, $scope.assert_21, $scope.assert_22,
+                      $scope.assert_30, $scope.assert_31, $scope.assert_32]; */
+        for (var i=0; i< test.cases.length; i++){
+          test_cases[i] = test_cases[i].trim();
+          if (test_cases[i]==""){
+            return false;
+          }
+        }
+
+        /*test_text= $scope.prbsub.trim();*/
+        return (test_text=="") ? false : true;
+      };
+
+      $scope.uploadFiles = function(){
+        for (var item in $scope.uploader.queue){
+          item.upload();
+        }
+        return null;
       };
     }
 
@@ -76,7 +99,10 @@
     </div>
   <div>
 <div>
+<button ng-click="uploadFiles()"> UPLOAD ALL FILES</button>
 
+<br />
+<br />
 <ul>
     <li ng-repeat="item in uploader.queue">
         Name: <span ng-bind="item.file.name"></span><br/>
@@ -207,12 +233,6 @@
     </div>
 
 <!-- Problem Submission Ending -->
-
-
-
-
-
-
 
 </body>
 </html>
