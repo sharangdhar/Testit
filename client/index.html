@@ -84,6 +84,7 @@
           $scope.uploader.queue[i].upload();
         }
 
+        $scope.uploader.clearQueue();
         var form_data = {};
         form_data.mode = "submission";
 
@@ -474,6 +475,11 @@
                   </div>
                   <div class="row">
                     <button class="btn btn-success" ng-click="uploadFiles()"> Upload </button>
+                  </div>
+                  <div class="row">
+                    <li ng-repeat="item in uploader.queue">
+                        Name: <span ng-bind="item.file.name"></span><br/>
+                    </li>
                   </div>
               </div>
         </form>
