@@ -197,12 +197,13 @@
 
         form_data.setup = ($scope.success_setup == null) ? "" : $scope.success_setup.trim();
         form_data.problem_id = $scope.problem_id;
-        console.log("problem_id: " + $scope.problem_id);
+        form_data.uid = "jk94";
 
         $http.post('', form_data).
             success(function(data, status, headers, config) {
               console.log("\nfinished analyzing user tests\n");
               $scope.tests_m = true;
+              console.log(JSON.stringify(data));
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
