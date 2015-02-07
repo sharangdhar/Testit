@@ -165,7 +165,7 @@ class handler (BaseHTTPRequestHandler):
         if (tid == 0):
             self.wfile.write("-1")
         else: 
-            tid = random.randomint(0, tid-1)
+            tid = random.randint(0, tid-1)
             if os.path.exists("data/checks/check_" + str(tid) + ".json"):
                 file = open("data/checks/check_" + str(tid) + ".json", "r")
                 data = json.loads(file.read())
