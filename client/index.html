@@ -14,9 +14,12 @@
   <script src="js/bootstrap.min.js"></script>
   <script src="js/bootstrap.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+  <script src = "https://cdn.rawgit.com/nervgh/angular-file-upload/master/angular-file-upload.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.0.6/es5-shim.min.js"></script>
   <script>
-    var demoApp = angular.module('demoApp',[]);
-    function MainController ($scope, $http, $location){
+    var demoApp = angular.module('demoApp',['angularFileUpload']);
+    function MainController ($scope, $http, $location, FileUploader){
+      $scope.uploader = new FileUploader();
       $scope.current_page = "landing";
 
       $scope.setPage = function(page){
@@ -26,9 +29,14 @@
 
     demoApp.controller('MainController',MainController);
   </script>
-
+  <style>
+            .my-drop-zone { border: dotted 3px lightgray; }
+            .nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
+            .another-file-over-class { border: dotted 3px green; }
+            html, body { height: 100%; }
+  </style>
 </head>
-<body ng-app="demoApp" ng-controller="MainController">
+<body ng-app="demoApp" ng-controller="MainController" uploader="uploader" nv-file-drop="">
 
   <div class="navbar navbar-inverse navbar-fixed-top" position="static" role="navigation">
       <div class="container-fluid">
@@ -47,10 +55,10 @@
         
            <!-- <li><a href="">Home</a></li> -->
            
-            <li ><a ng-click="setPage(profile)">Profile</a></li>
-            <li><a ng-click="setPage(submission)">Submission Page</a></li>
-            <li><a ng-click="setPage(contributor)">Contributor Page</a></li>
-            <li><a ng-click="setPage(developers)">Developers</a></li>
+            <li ><a ng-click="setPage('profile')">Profile</a></li>
+            <li><a ng-click="setPage('submission')">Submission Page</a></li>
+            <li><a ng-click="setPage('contributor')">Contributor Page</a></li>
+            <li><a ng-click="setPage('developers')">Developers</a></li>
           
           </ul>
         </div><!--/.nav-collapse -->
@@ -59,17 +67,25 @@
   <br />
   <br />
   <br />
-  <div ng-show="{{8==8}}">
-    what a world
-  </div>
-  <div ng-show="{{7==8}}">
-    ikr
-  </div>
+  <br />
 
+<div class="row text-center">
+  <div class="col-md-4">
+    <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
+        Base drop zone
+    </div>
+  <div>
+<div>
 
+<ul>
+    <li ng-repeat="item in uploader.queue">
+        Name: <span ng-bind="item.file.name"></span><br/>
+        <button ng-click="item.upload()">upload</button>
+    </li>
+</ul>
 <!-- Developers starting -->
 
-<div class="container">
+<div class="container" ng-if="current_page=='developers'">
  <!-- <div ng-if="isAuthenticated() && currentUser.username"> -->
     <div class="container marketing" align="center">
 
@@ -122,7 +138,7 @@
 <!-- Developers Ending -->
 
 <!--Problem Submission Starting -->
- <div class="container ">
+<div class="container" ng-if="current_page == 'submission'">
       <div class="row text-center">
         <h4 for="prbsub">Problem Submission</h4>
       </div>
