@@ -44,20 +44,21 @@ class handler (BaseHTTPRequestHandler):
             self.send_error(404,'File Not Found: %s' % self.path)
 
     def do_POST(self):
-        if self.path=="/send":
-            form = cgi.FieldStorage(
-                fp=self.rfile, 
-                headers=self.headers,
-                environ={'REQUEST_METHOD':'POST',
-                         'CONTENT_TYPE':self.headers['Content-Type'],
-                     })
-            
-            print "Your name is: %s" % form["your_name"].value
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write("Thanks %s !" % form["your_name"].value)
-        else: 
-            self.deal_post_data()
+        '''
+        form = cgi.FieldStorage(
+            fp=self.rfile, 
+            headers=self.headers,
+            environ={'REQUEST_METHOD':'POST',
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+                 })
+        
+        print "Your name is: %s" % form["your_name"].value
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write("Thanks %s !" % form["your_name"].value)
+        '''
+
+        self.deal_post_data()
         return
 
     # From https://gist.github.com/UniIsland/3346170
@@ -83,7 +84,7 @@ class handler (BaseHTTPRequestHandler):
             out = open("data/" + fn, 'wb')
         except IOError:
             return (False, "Can't create file to write, do you have permission to write?")
-                
+
         preline = self.rfile.readline()
         remainbytes -= len(preline)
         while remainbytes > 0:
