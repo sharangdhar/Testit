@@ -58,6 +58,8 @@ class handler (BaseHTTPRequestHandler):
                 return
             if data['mode'] == 'login':
                 self.handle_login(data)
+            if data['mode'] == 'profile':
+                self.handle_profile(data)
             if data['mode'] == 'submission':
                 global tid
                 try: 
@@ -281,6 +283,10 @@ class handler (BaseHTTPRequestHandler):
             addUser(data['uid'])
         else:
             return
+
+    def handle_profile(self, data):
+        print data['uid']
+        self.wfile.write(json.dumps(getUsr(data['uid'])))
 
     def log_message(self, format, *args):
         log = open(".log", 'a')
