@@ -161,7 +161,7 @@
       $scope.validChallenges = function(){
 
         for (var i=0; i< $scope.contrib_challenges.length; i++){
-          if ($scope.contrib_challenges[i][3].trim()==""){
+          if ($scope.contrib_challenges[i][2]==null || $scope.contrib_challenges[i][2].trim()=="") {
             return false;
           }
         }
@@ -171,12 +171,15 @@
 
       $scope.validUserTests = function(){
         for (var i=0; i< $scope.contrib_tests.length; i++){
-          if ($scope.contrib_tests[i].trim()==""){
+          if ($scope.contrib_tests[i][0] == null || $scope.contrib_tests[i][1] == null || $scope.contrib_tests[i][2] == null){
+            return false;
+          }
+          if ($scope.contrib_tests[i][0].trim()=="" || $scope.contrib_tests[i][1].trim()=="" || $scope.contrib_tests[i][2].trim()==""){
             return false;
           }
         }
 
-        return $scope.success_setup.trim()!="";
+        return true;
       };
 
       $scope.uploadFiles = function(){
@@ -245,12 +248,12 @@
       };
 
       $scope.checkChallenges = function(){
-        /*
-        if(!$scope.validChallenges()){
+        
+        if($scope.validChallenges() == false){
           $scope.incomplete = true;
           $scope.incomplete_message = "One or more required fields was not filled out.";
           return null;
-        } */
+        }
 
         var form_data = {};
         form_data.mode = "contributor_check";
@@ -273,6 +276,13 @@
               console.log("config: " + config);
               if (data == "All tests passed!"){
                 $scope.challenges_m = true;
+                for (var i=0; i<$scope.contrib_challenges.length;i++){
+                  $scope.contrib_challenges[i][0] = "";
+                  $scope.contrib_challenges[i][1] = "";
+                  $scope.contrib_challenges[i][2] = "";
+                }
+                
+
               } else {
                 $scope.failure_m = true;
                 $scope.success_message = data + "   ";
@@ -287,6 +297,12 @@
 
       $scope.submitContributorTests = function(){
         
+        if($scope.validUserTests() == false){
+          $scope.incomplete = true;
+          $scope.incomplete_message = "One or more required fields was not filled out.";
+          return null;
+        }
+
         var form_data = {};
         form_data.mode = "contributor_tests";
 
@@ -308,6 +324,15 @@
               }
               console.log($scope.test_data);
               $scope.tests_m = true;
+
+              for (var i=0;i<$scope.contrib_tests.length;i++){
+                $scope.contrib_tests[i][0] = "";
+                $scope.contrib_tests[i][1] = "";
+                $scope.contrib_tests[i][2] = "";
+              }
+
+              $scope.success_setup = "";
+              $scope.check_field = "";
             }).
             error(function(data, status, headers, config) {
               // called asynchronously if an error occurs
@@ -797,7 +822,7 @@
           
           <div class="tab-content">
           
-          <img src="images/sharang.jpg" name="aboutme" width="140" height="140" border="0" class="img-circle">
+          <img src="images/avatar_male.png" name="aboutme" width="140" height="140" border="0" class="img-circle">
           <br>
           <br>
             <h3 class="media-heading">Sharangdhar <small> USA</small></h3>
