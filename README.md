@@ -1,6 +1,8 @@
 # README #
 
-Set up the server and get it running.
+## About
+A web platform that allows users to contribute test cases for existing projects and upload new projects along with instructions for problem solvers. Requires users to pass problem-specific challenges to contribute cases for a given problem. It sends test suite and results to problem submitter when a problem expires. Submitters can track their problems via their profile page. 
+
 
 ### What is this repository for? ###
 
