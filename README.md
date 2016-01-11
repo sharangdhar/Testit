@@ -30,3 +30,6 @@ A web platform that allows users to contribute test cases for existing projects 
 
 * Repo owner or admin
 * Other community or team contact
+
+### Contributors
+Narain Krishnamurthy, Sohil Shah, Ashwin Raghavachari, Sharangdhar Chakraborty
